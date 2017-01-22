@@ -18,8 +18,9 @@ logo5 byte '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/    
 mapHeight = 35
 mapWidth = 98 ; LENGHTOF logo1 = 98
 
-BUFSIZE = mapHeight*mapWidth
-mapMatrix BYTE BUFSIZE DUP (?)
+BUFSIZE = mapHeight*mapWidth + 200 ; O tamanho não é esse
+BUFFERMAPA BYTE BUFSIZE DUP (?)
+mapMatrix BYTE BUFSIZE-468 DUP (?) ; 200 referente a parte do enigma e 268 devido as paredes laterais
 mapaFileName BYTE 'nivel1.mapa',0
 
 ;Estrutura Player
@@ -27,14 +28,18 @@ playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
 playerX BYTE ? ; Posicao X do jogador na tela
 playerY BYTE ? ; Posicao Y do jogador na tela
 
-.code
+; Estrutura Enigma
+enigma BYTE 150 DUP (?)
+respostaOriginal BYTE 4 DUP(?)
+respostaJogador BYTE 4 DUP(?)
 
+.code
 main PROC
 INICIALIZADOR: ; Configuracoes iniciais
 	call LoadMapa
 	call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
 	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
-	sub dl, LENGTHOF logo1 
+	sub dl, LENGTHOF logo1
 	shr dl,1
 	mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
 
@@ -174,13 +179,45 @@ LoadMapa PROC
 	call OpenInputFile
 
 	;mov  eax,fileHandle
-    mov  edx,OFFSET mapMatrix
+    mov  edx,OFFSET BUFFERMAPA
     mov  ecx,BUFSIZE
     call ReadFromFile
     ;jc   show_error_message
     ;mov  bytesRead,eax
 
-	mov edx, OFFSET mapMatrix
+	mov edx,OFFSET BUFFERMAPA
+	mov eax, OFFSET enigma
+L1:
+	mov cl, [edx]
+	cmp cl,'#'
+	call DumpRegs
+	je L2
+	mov [eax], cl
+	inc eax
+	inc edx
+	jmp L1
+
+L2:
+	inc eax
+	inc edx
+	mov eax, OFFSET respostaOriginal
+L3:
+	mov cl, [edx]
+	cmp cl,'#'
+	call DumpRegs
+	je L4
+	mov [eax], cl
+	inc eax
+	inc edx
+	jmp L3
+L4:
+
+	;mov edx, OFFSET enigma
+	;call WriteString
+	;mov edx, OFFSET respostaOriginal
+	;call WriteString
+
+	mov edx, OFFSET BUFFERMAPA
 	call WriteString
 	ret
 LoadMapa ENDP
@@ -189,7 +226,7 @@ LoadMapa ENDP
 DrawLogo PROC
 ;
 ; Desenha na tela o logo do jogo
-; Recebe: ? 
+; Recebe: ?
 ; Retorna: ?
 ;---------------------------------------------------
 	call GetTextColor
@@ -302,7 +339,7 @@ DrawMapa PROC
 ; Recebe: ? 
 ; Retorna: ?
 ;---------------------------------------------------
-	mov al, 0feh
+	mov al, 0dbh
 	mov ecx, mapWidth + 2
 	inc CurrentLine
 	mov dl,Xmargin

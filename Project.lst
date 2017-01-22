@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    01/03/17 19:56:15
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    01/12/17 21:18:59
 getTheKey.asm						     Page 1 - 1
 
 
@@ -139,39 +139,52 @@ getTheKey.asm						     Page 1 - 1
  = 00000023			mapHeight = 35
  = 00000062			mapWidth = 98 ; LENGHTOF logo1 = 98
 
- = 00000D66			BUFSIZE = mapHeight*mapWidth
- 00000207  00000D66 [		mapMatrix BYTE BUFSIZE DUP (?)
+ = 00000E2E			BUFSIZE = mapHeight*mapWidth + 200 ; O tamanho não é esse
+ 00000207  00000E2E [		BUFFERMAPA BYTE BUFSIZE DUP (?)
 	    00
 	   ]
- 00000F6D 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0
+ 00001035  00000C5A [		mapMatrix BYTE BUFSIZE-468 DUP (?) ; 200 referente a parte do enigma e 268 devido as paredes laterais
+	    00
+	   ]
+ 00001C8F 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0
 	   31 2E 6D 61 70
 	   61 00
 
 				;Estrutura Player
- 00000F79 FE			playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
- 00000F7A 00			playerX BYTE ? ; Posicao X do jogador na tela
- 00000F7B 00			playerY BYTE ? ; Posicao Y do jogador na tela
+ 00001C9B FE			playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
+ 00001C9C 00			playerX BYTE ? ; Posicao X do jogador na tela
+ 00001C9D 00			playerY BYTE ? ; Posicao Y do jogador na tela
+
+				; Estrutura Enigma
+ 00001C9E  00000096 [		enigma BYTE 150 DUP (?)
+	    00
+	   ]
+ 00001D34  00000004 [		respostaOriginal BYTE 4 DUP(?)
+	    00
+	   ]
+ 00001D38  00000004 [		respostaJogador BYTE 4 DUP(?)
+	    00
+	   ]
 
  00000000			.code
-
  00000000			main PROC
  00000000			INICIALIZADOR: ; Configuracoes iniciais
  00000000  E8 00000154			call LoadMapa
  00000005  E8 00000000 E		call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
  0000000A  E8 00000000 E		call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
- 0000000F  80 EA 65			sub dl, LENGTHOF logo1 
+ 0000000F  80 EA 65			sub dl, LENGTHOF logo1
  00000012  D0 EA			shr dl,1
  00000014  88 15 00000000 R		mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
 
- 0000001A  E8 0000015E			call DrawLogo ; Desenha o logo do jogo 
- 0000001F  E8 00000242			call DrawEnigma ; Desenha o local onde ficara o enigma e o proprio enigma (temos que resolver isso)
- 00000024  E8 000002BD			call DrawMapa ; Desenha o mapa do labirinto
+ 0000001A  E8 00000193			call DrawLogo ; Desenha o logo do jogo 
+ 0000001F  E8 00000277			call DrawEnigma ; Desenha o local onde ficara o enigma e o proprio enigma (temos que resolver isso)
+ 00000024  E8 000002F2			call DrawMapa ; Desenha o mapa do labirinto
  00000029  A0 00000002 R		mov al, BYTE PTR minMap ; Coloca o jogador em uma posicao predefinida no inicio (mudar essa parte em funcao do mapa)
  0000002E  FE C0			inc al
- 00000030  A2 00000F7A R		mov playerX, al
+ 00000030  A2 00001C9C R		mov playerX, al
  00000035  A0 00000003 R		mov al, BYTE PTR minMap+1
  0000003A  FE C0			inc al
- 0000003C  A2 00000F7B R		mov playerY, al
+ 0000003C  A2 00001C9D R		mov playerY, al
  00000041  E8 000000AF			call DrawPlayer ; Desenha o jogador na tela na posicao configurada
  00000046			MAINLOOP:
  00000046  E8 00000000 E		call ReadKey ; Le do teclado alguma tecla
@@ -207,38 +220,38 @@ getTheKey.asm						     Page 1 - 1
  0000007B			UP:
  0000007B  8A 1D 00000003 R		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
  00000081  FE C3			inc bl
- 00000083  38 1D 00000F7B R		cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+ 00000083  38 1D 00001C9D R		cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
  00000089  74 64			je fim
  0000008B  E8 00000097			call ClearPlayer ; Limpa o antigo local do jogador
- 00000090  FE 0D 00000F7B R		dec playerY ; Move o jogador para cima
+ 00000090  FE 0D 00001C9D R		dec playerY ; Move o jogador para cima
  00000096  EB 57			jmp fim
  00000098			DOWN:
  00000098  8A 1D 00000005 R		mov bl, BYTE PTR maxMap+1
  0000009E  FE CB			dec bl
- 000000A0  38 1D 00000F7B R		cmp playerY, bl
+ 000000A0  38 1D 00001C9D R		cmp playerY, bl
  000000A6  74 47			je fim
  000000A8  E8 0000007A			call ClearPlayer ; Limpa o antigo local do jogador
- 000000AD  FE 05 00000F7B R		inc playerY
+ 000000AD  FE 05 00001C9D R		inc playerY
  000000B3  EB 3A			jmp fim
  000000B5			Left:
  000000B5  8A 1D 00000002 R		mov bl, BYTE PTR minMap
  000000BB  FE C3			inc bl
- 000000BD  38 1D 00000F7A R		cmp playerX, bl
+ 000000BD  38 1D 00001C9C R		cmp playerX, bl
  000000C3  74 2A			je fim
  000000C5  E8 0000005D			call ClearPlayer ; Limpa o antigo local do jogador
- 000000CA  FE 0D 00000F7A R		dec playerX
+ 000000CA  FE 0D 00001C9C R		dec playerX
  000000D0  EB 1D			jmp fim
  000000D2			Right:
  000000D2  8A 1D 00000004 R		mov bl, BYTE PTR maxMap
  000000D8  FE CB			dec bl
- 000000DA  38 1D 00000F7A R		cmp playerX, bl
+ 000000DA  38 1D 00001C9C R		cmp playerX, bl
  000000E0  74 0D			je fim
  000000E2  E8 00000040			call ClearPlayer ; Limpa o antigo local do jogador
- 000000E7  FE 05 00000F7A R		inc playerX
+ 000000E7  FE 05 00001C9C R		inc playerX
  000000ED  EB 00			jmp fim
  000000EF			Fim:
  000000EF  E8 00000001			call DrawPlayer ; Desenha o jogador na nova posicao
- 000000F4  C3	ret
+ 000000F4  C3				ret
  000000F5			HandleControl ENDP
 
 				;---------------------------------------------------	
@@ -251,13 +264,13 @@ getTheKey.asm						     Page 1 - 1
  000000F5  E8 00000000 E		call GetTextColor
  000000FA  50			    push eax
 
- 000000FB  8A 15 00000F7A R		mov dl, playerX
- 00000101  8A 35 00000F7B R		mov dh, playerY
+ 000000FB  8A 15 00001C9C R		mov dl, playerX
+ 00000101  8A 35 00001C9D R		mov dh, playerY
  00000107  E8 00000000 E		call GoToxy
 
  0000010C  B8 0000000B			mov eax,lightcyan
  00000111  E8 00000000 E		call settextcolor
- 00000116  A0 00000F79 R		mov al, playerSymbol
+ 00000116  A0 00001C9B R		mov al, playerSymbol
  0000011B  E8 00000000 E		call WriteChar
 
  00000120  58				pop eax
@@ -276,13 +289,13 @@ getTheKey.asm						     Page 1 - 1
  00000127  E8 00000000 E		call GetTextColor
  0000012C  50			    push eax
 
- 0000012D  8A 15 00000F7A R		mov dl, playerX
- 00000133  8A 35 00000F7B R		mov dh, playerY
+ 0000012D  8A 15 00001C9C R		mov dl, playerX
+ 00000133  8A 35 00001C9D R		mov dh, playerY
  00000139  E8 00000000 E		call GoToxy
 
  0000013E  B8 00000000			mov eax,black
  00000143  E8 00000000 E		call settextcolor
- 00000148  A0 00000F79 R		mov al, playerSymbol
+ 00000148  A0 00001C9B R		mov al, playerSymbol
  0000014D  E8 00000000 E		call WriteChar
 
  00000152  58				pop eax
@@ -293,186 +306,220 @@ getTheKey.asm						     Page 1 - 1
 				;---------------------------------------------------
  00000159			LoadMapa PROC
 				;
-				; Carrega na memoria um mapa (precisamos pensar nesse procidemento)
+				; Carrega na memoria um mapa
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 00000159  BA 00000F6D R		mov edx, OFFSET mapaFileName
+ 00000159  BA 00001C8F R		mov edx, OFFSET mapaFileName
  0000015E  E8 00000000 E		call OpenInputFile
 
 					;mov  eax,fileHandle
- 00000163  BA 00000207 R	    mov  edx,OFFSET mapMatrix
- 00000168  B9 00000D66		    mov  ecx,BUFSIZE
+ 00000163  BA 00000207 R	    mov  edx,OFFSET BUFFERMAPA
+ 00000168  B9 00000E2E		    mov  ecx,BUFSIZE
  0000016D  E8 00000000 E	    call ReadFromFile
 				    ;jc   show_error_message
 				    ;mov  bytesRead,eax
 
- 00000172  BA 00000207 R		mov edx, OFFSET mapMatrix
- 00000177  E8 00000000 E		call WriteString
- 0000017C  C3				ret
- 0000017D			LoadMapa ENDP
+ 00000172  BA 00000207 R		mov edx,OFFSET BUFFERMAPA
+ 00000177  B8 00001C9E R		mov eax, OFFSET enigma
+ 0000017C			L1:
+ 0000017C  8A 0A			mov cl, [edx]
+ 0000017E  80 F9 23			cmp cl,'#'
+ 00000181  E8 00000000 E		call DumpRegs
+ 00000186  74 06			je L2
+ 00000188  88 08			mov [eax], cl
+ 0000018A  40				inc eax
+ 0000018B  42				inc edx
+ 0000018C  EB EE			jmp L1
+
+ 0000018E			L2:
+ 0000018E  40				inc eax
+ 0000018F  42				inc edx
+ 00000190  B8 00001D34 R		mov eax, OFFSET respostaOriginal
+ 00000195			L3:
+ 00000195  8A 0A			mov cl, [edx]
+ 00000197  80 F9 23			cmp cl,'#'
+ 0000019A  E8 00000000 E		call DumpRegs
+ 0000019F  74 06			je L4
+ 000001A1  88 08			mov [eax], cl
+ 000001A3  40				inc eax
+ 000001A4  42				inc edx
+ 000001A5  EB EE			jmp L3
+ 000001A7			L4:
+
+					;mov edx, OFFSET enigma
+					;call WriteString
+					;mov edx, OFFSET respostaOriginal
+					;call WriteString
+
+
+
+ 000001A7  BA 00000207 R		mov edx, OFFSET BUFFERMAPA
+ 000001AC  E8 00000000 E		call WriteString
+ 000001B1  C3				ret
+ 000001B2			LoadMapa ENDP
 
 				;---------------------------------------------------
- 0000017D			DrawLogo PROC
+ 000001B2			DrawLogo PROC
 				;
 				; Desenha na tela o logo do jogo
-				; Recebe: ? 
+				; Recebe: ?
 				; Retorna: ?
 				;---------------------------------------------------
- 0000017D  E8 00000000 E		call GetTextColor
- 00000182  50			    push eax
+ 000001B2  E8 00000000 E		call GetTextColor
+ 000001B7  50			    push eax
 					
- 00000183  B8 00000000			mov eax,0
- 00000188  B8 00000009			mov eax,lightblue
- 0000018D  E8 00000000 E		call settextcolor
+ 000001B8  B8 00000000			mov eax,0
+ 000001BD  B8 00000009			mov eax,lightblue
+ 000001C2  E8 00000000 E		call settextcolor
 
- 00000192  8A 15 00000000 R		mov dl, Xmargin
- 00000198  8A 35 00000001 R		mov dh,CurrentLine
- 0000019E  FE 05 00000001 R		inc CurrentLine
- 000001A4  E8 00000000 E		call GoToxy
- 000001A9  BA 00000006 R		mov edx, offset logo1
- 000001AE  E8 00000000 E		call writestring
+ 000001C7  8A 15 00000000 R		mov dl, Xmargin
+ 000001CD  8A 35 00000001 R		mov dh,CurrentLine
+ 000001D3  FE 05 00000001 R		inc CurrentLine
+ 000001D9  E8 00000000 E		call GoToxy
+ 000001DE  BA 00000006 R		mov edx, offset logo1
+ 000001E3  E8 00000000 E		call writestring
 
- 000001B3  B8 00000009			mov eax,lightblue
- 000001B8  E8 00000000 E		call settextcolor
+ 000001E8  B8 00000009			mov eax,lightblue
+ 000001ED  E8 00000000 E		call settextcolor
 
- 000001BD  8A 15 00000000 R		mov dl, Xmargin
- 000001C3  8A 35 00000001 R		mov dh,CurrentLine
- 000001C9  FE 05 00000001 R		inc CurrentLine
- 000001CF  E8 00000000 E		call GoToxy
- 000001D4  BA 0000006B R		mov edx, offset logo2
- 000001D9  E8 00000000 E		call writestring
+ 000001F2  8A 15 00000000 R		mov dl, Xmargin
+ 000001F8  8A 35 00000001 R		mov dh,CurrentLine
+ 000001FE  FE 05 00000001 R		inc CurrentLine
+ 00000204  E8 00000000 E		call GoToxy
+ 00000209  BA 0000006B R		mov edx, offset logo2
+ 0000020E  E8 00000000 E		call writestring
 
- 000001DE  B8 0000000B			mov eax,lightcyan
- 000001E3  E8 00000000 E		call settextcolor
+ 00000213  B8 0000000B			mov eax,lightcyan
+ 00000218  E8 00000000 E		call settextcolor
 
- 000001E8  8A 15 00000000 R		mov dl, Xmargin
- 000001EE  8A 35 00000001 R		mov dh,CurrentLine
- 000001F4  FE 05 00000001 R		inc CurrentLine
- 000001FA  E8 00000000 E		call GoToxy
- 000001FF  BA 000000D1 R		mov edx, offset logo3
- 00000204  E8 00000000 E		call writestring
+ 0000021D  8A 15 00000000 R		mov dl, Xmargin
+ 00000223  8A 35 00000001 R		mov dh,CurrentLine
+ 00000229  FE 05 00000001 R		inc CurrentLine
+ 0000022F  E8 00000000 E		call GoToxy
+ 00000234  BA 000000D1 R		mov edx, offset logo3
+ 00000239  E8 00000000 E		call writestring
 
- 00000209  B8 0000000A			mov eax,lightgreen
- 0000020E  E8 00000000 E		call settextcolor
+ 0000023E  B8 0000000A			mov eax,lightgreen
+ 00000243  E8 00000000 E		call settextcolor
 
- 00000213  8A 15 00000000 R		mov dl, Xmargin
- 00000219  8A 35 00000001 R		mov dh,CurrentLine
- 0000021F  FE 05 00000001 R		inc CurrentLine
- 00000225  E8 00000000 E		call GoToxy
- 0000022A  BA 00000137 R		mov edx, offset logo4
- 0000022F  E8 00000000 E		call writestring
+ 00000248  8A 15 00000000 R		mov dl, Xmargin
+ 0000024E  8A 35 00000001 R		mov dh,CurrentLine
+ 00000254  FE 05 00000001 R		inc CurrentLine
+ 0000025A  E8 00000000 E		call GoToxy
+ 0000025F  BA 00000137 R		mov edx, offset logo4
+ 00000264  E8 00000000 E		call writestring
 
- 00000234  B8 00000003			mov eax,cyan
- 00000239  E8 00000000 E		call settextcolor
+ 00000269  B8 00000003			mov eax,cyan
+ 0000026E  E8 00000000 E		call settextcolor
 
- 0000023E  8A 15 00000000 R		mov dl, Xmargin
- 00000244  8A 35 00000001 R		mov dh,CurrentLine
- 0000024A  FE 05 00000001 R		inc CurrentLine
- 00000250  E8 00000000 E		call GoToxy
- 00000255  BA 0000019F R		mov edx, offset logo5
- 0000025A  E8 00000000 E		call writestring
+ 00000273  8A 15 00000000 R		mov dl, Xmargin
+ 00000279  8A 35 00000001 R		mov dh,CurrentLine
+ 0000027F  FE 05 00000001 R		inc CurrentLine
+ 00000285  E8 00000000 E		call GoToxy
+ 0000028A  BA 0000019F R		mov edx, offset logo5
+ 0000028F  E8 00000000 E		call writestring
 
- 0000025F  58				pop eax
- 00000260  E8 00000000 E		call settextcolor
+ 00000294  58				pop eax
+ 00000295  E8 00000000 E		call settextcolor
 
- 00000265  C3				ret
- 00000266			DrawLogo ENDP
+ 0000029A  C3				ret
+ 0000029B			DrawLogo ENDP
 
 				;---------------------------------------------------
- 00000266			DrawEnigma PROC
+ 0000029B			DrawEnigma PROC
 				;
 				; Desenha na tela o local enigma e o enigma propriamente dito
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 00000266  B0 2B			mov al, '+'
- 00000268  B9 00000065			mov ecx, LENGTHOF logo1
- 0000026D  FE 05 00000001 R		inc CurrentLine
- 00000273  8A 15 00000000 R		mov dl,Xmargin
- 00000279  8A 35 00000001 R		mov dh,CurrentLine
- 0000027F  FE 05 00000001 R		inc CurrentLine
- 00000285  E8 00000000 E		call GoToxy 
- 0000028A			L1:
- 0000028A  E8 00000000 E		call WriteChar
- 0000028F  E2 F9			loop L1
+ 0000029B  B0 2B			mov al, '+'
+ 0000029D  B9 00000065			mov ecx, LENGTHOF logo1
+ 000002A2  FE 05 00000001 R		inc CurrentLine
+ 000002A8  8A 15 00000000 R		mov dl,Xmargin
+ 000002AE  8A 35 00000001 R		mov dh,CurrentLine
+ 000002B4  FE 05 00000001 R		inc CurrentLine
+ 000002BA  E8 00000000 E		call GoToxy 
+ 000002BF			L1:
+ 000002BF  E8 00000000 E		call WriteChar
+ 000002C4  E2 F9			loop L1
 
- 00000291  8A 15 00000000 R		mov dl,Xmargin
- 00000297  8A 35 00000001 R		mov dh,CurrentLine
- 0000029D  FE 05 00000001 R		inc CurrentLine
- 000002A3  E8 00000000 E		call GoToxy
- 000002A8  B9 00000063			mov ecx, LENGTHOF logo1 - 2
- 000002AD  E8 00000000 E		call WriteChar
- 000002B2  B0 20			mov al, ' '
- 000002B4			L2:
- 000002B4  E8 00000000 E		call WriteChar
- 000002B9  E2 F9			loop L2
+ 000002C6  8A 15 00000000 R		mov dl,Xmargin
+ 000002CC  8A 35 00000001 R		mov dh,CurrentLine
+ 000002D2  FE 05 00000001 R		inc CurrentLine
+ 000002D8  E8 00000000 E		call GoToxy
+ 000002DD  B9 00000063			mov ecx, LENGTHOF logo1 - 2
+ 000002E2  E8 00000000 E		call WriteChar
+ 000002E7  B0 20			mov al, ' '
+ 000002E9			L2:
+ 000002E9  E8 00000000 E		call WriteChar
+ 000002EE  E2 F9			loop L2
 
- 000002BB  B0 2B			mov al, '+'
- 000002BD  E8 00000000 E		call WriteChar
+ 000002F0  B0 2B			mov al, '+'
+ 000002F2  E8 00000000 E		call WriteChar
 
- 000002C2  B9 00000065			mov ecx, LENGTHOF logo1
- 000002C7  8A 15 00000000 R		mov dl,Xmargin
- 000002CD  8A 35 00000001 R		mov dh,CurrentLine
- 000002D3  FE 05 00000001 R		inc CurrentLine
- 000002D9  E8 00000000 E		call GoToxy 
- 000002DE			L3:
- 000002DE  E8 00000000 E		call WriteChar
- 000002E3  E2 F9			loop L3
- 000002E5  C3				ret
- 000002E6			DrawEnigma ENDP
+ 000002F7  B9 00000065			mov ecx, LENGTHOF logo1
+ 000002FC  8A 15 00000000 R		mov dl,Xmargin
+ 00000302  8A 35 00000001 R		mov dh,CurrentLine
+ 00000308  FE 05 00000001 R		inc CurrentLine
+ 0000030E  E8 00000000 E		call GoToxy 
+ 00000313			L3:
+ 00000313  E8 00000000 E		call WriteChar
+ 00000318  E2 F9			loop L3
+ 0000031A  C3				ret
+ 0000031B			DrawEnigma ENDP
 
 				;---------------------------------------------------
- 000002E6			DrawMapa PROC
+ 0000031B			DrawMapa PROC
 				;
 				; Desenha na tela o mapa do labirinto
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 000002E6  B0 FE			mov al, 0feh
- 000002E8  B9 00000064			mov ecx, mapWidth + 2
- 000002ED  FE 05 00000001 R		inc CurrentLine
- 000002F3  8A 15 00000000 R		mov dl,Xmargin
- 000002F9  8A 35 00000001 R		mov dh,CurrentLine
- 000002FF  66| 89 15			mov minMap,dx
+ 0000031B  B0 DB			mov al, 0dbh
+ 0000031D  B9 00000064			mov ecx, mapWidth + 2
+ 00000322  FE 05 00000001 R		inc CurrentLine
+ 00000328  8A 15 00000000 R		mov dl,Xmargin
+ 0000032E  8A 35 00000001 R		mov dh,CurrentLine
+ 00000334  66| 89 15			mov minMap,dx
 	   00000002 R
- 00000306  FE 05 00000001 R		inc CurrentLine
- 0000030C  E8 00000000 E		call GoToxy
- 00000311			L1:
- 00000311  E8 00000000 E		call WriteChar
- 00000316  E2 F9			loop L1
+ 0000033B  FE 05 00000001 R		inc CurrentLine
+ 00000341  E8 00000000 E		call GoToxy
+ 00000346			L1:
+ 00000346  E8 00000000 E		call WriteChar
+ 0000034B  E2 F9			loop L1
 
- 00000318  B0 DB			mov al, 0dbh
- 0000031A  B9 00000023			mov ecx, mapHeight
- 0000031F			L2:
- 0000031F  8A 15 00000002 R		mov dl, BYTE PTR minMap
- 00000325  8A 35 00000001 R		mov dh, CurrentLine
- 0000032B  E8 00000000 E		call GoToxy
- 00000330  E8 00000000 E		call WriteChar
- 00000335  80 C2 63			add dl, mapWidth + 1
- 00000338  E8 00000000 E		call GoToxy
- 0000033D  E8 00000000 E		call WriteChar
- 00000342  FE 05 00000001 R		inc CurrentLine
- 00000348  E2 D5			loop L2
+ 0000034D  B0 DB			mov al, 0dbh
+ 0000034F  B9 00000023			mov ecx, mapHeight
+ 00000354			L2:
+ 00000354  8A 15 00000002 R		mov dl, BYTE PTR minMap
+ 0000035A  8A 35 00000001 R		mov dh, CurrentLine
+ 00000360  E8 00000000 E		call GoToxy
+ 00000365  E8 00000000 E		call WriteChar
+ 0000036A  80 C2 63			add dl, mapWidth + 1
+ 0000036D  E8 00000000 E		call GoToxy
+ 00000372  E8 00000000 E		call WriteChar
+ 00000377  FE 05 00000001 R		inc CurrentLine
+ 0000037D  E2 D5			loop L2
 
- 0000034A  B0 FE			mov al, 0feh
- 0000034C  B9 00000064			mov ecx, mapWidth + 2
- 00000351  8A 15 00000000 R		mov dl,Xmargin
- 00000357  8A 35 00000001 R		mov dh,CurrentLine
- 0000035D  E8 00000000 E		call GoToxy
- 00000362			L3:
- 00000362  E8 00000000 E		call WriteChar
- 00000367  E2 F9			loop L3
+ 0000037F  B0 FE			mov al, 0feh
+ 00000381  B9 00000064			mov ecx, mapWidth + 2
+ 00000386  8A 15 00000000 R		mov dl,Xmargin
+ 0000038C  8A 35 00000001 R		mov dh,CurrentLine
+ 00000392  E8 00000000 E		call GoToxy
+ 00000397			L3:
+ 00000397  E8 00000000 E		call WriteChar
+ 0000039C  E2 F9			loop L3
 
- 00000369  8A 15 00000000 R		mov dl, Xmargin
- 0000036F  80 C2 63			add dl, mapWidth + 1
- 00000372  66| 89 15			mov maxMap,dx
+ 0000039E  8A 15 00000000 R		mov dl, Xmargin
+ 000003A4  80 C2 63			add dl, mapWidth + 1
+ 000003A7  66| 89 15			mov maxMap,dx
 	   00000004 R
- 00000379  C3				ret
- 0000037A			DrawMapa ENDP
+ 000003AE  C3				ret
+ 000003AF			DrawMapa ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    01/03/17 19:56:15
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    01/12/17 21:18:59
 getTheKey.asm						     Symbols 2 - 1
 
 
@@ -566,8 +613,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000F7C Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000037A Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00001D3C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000003AF Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -582,15 +629,15 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DrawEnigma . . . . . . . . . . .	P Near	 00000266 _TEXT	Length= 00000080 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 0000028A _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 000002B4 _TEXT	
-  L3 . . . . . . . . . . . . . .	L Near	 000002DE _TEXT	
-DrawLogo . . . . . . . . . . . .	P Near	 0000017D _TEXT	Length= 000000E9 Public STDCALL
-DrawMapa . . . . . . . . . . . .	P Near	 000002E6 _TEXT	Length= 00000094 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 00000311 _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 0000031F _TEXT	
-  L3 . . . . . . . . . . . . . .	L Near	 00000362 _TEXT	
+DrawEnigma . . . . . . . . . . .	P Near	 0000029B _TEXT	Length= 00000080 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 000002BF _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 000002E9 _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 00000313 _TEXT	
+DrawLogo . . . . . . . . . . . .	P Near	 000001B2 _TEXT	Length= 000000E9 Public STDCALL
+DrawMapa . . . . . . . . . . . .	P Near	 0000031B _TEXT	Length= 00000094 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000346 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 00000354 _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 00000397 _TEXT	
 DrawPlayer . . . . . . . . . . .	P Near	 000000F5 _TEXT	Length= 00000032 Public STDCALL
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -631,7 +678,11 @@ HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-LoadMapa . . . . . . . . . . . .	P Near	 00000159 _TEXT	Length= 00000024 Public STDCALL
+LoadMapa . . . . . . . . . . . .	P Near	 00000159 _TEXT	Length= 00000059 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 0000017C _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 0000018E _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 00000195 _TEXT	
+  L4 . . . . . . . . . . . . . .	L Near	 000001A7 _TEXT	
 LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -715,7 +766,8 @@ Symbols:
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
 ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
-BUFSIZE  . . . . . . . . . . . .	Number	 00000D66h   
+BUFFERMAPA . . . . . . . . . . .	Byte	 00000207 _DATA	
+BUFSIZE  . . . . . . . . . . . .	Number	 00000E2Eh   
 CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
 CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
 CREATE_NEW . . . . . . . . . . .	Number	 00000001h   
@@ -921,6 +973,7 @@ black  . . . . . . . . . . . . .	Number	 00000000h
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
+enigma . . . . . . . . . . . . .	Byte	 00001C9E _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
@@ -937,15 +990,17 @@ logo4  . . . . . . . . . . . . .	Byte	 00000137 _DATA
 logo5  . . . . . . . . . . . . .	Byte	 0000019F _DATA	
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 mapHeight  . . . . . . . . . . .	Number	 00000023h   
-mapMatrix  . . . . . . . . . . .	Byte	 00000207 _DATA	
+mapMatrix  . . . . . . . . . . .	Byte	 00001035 _DATA	
 mapWidth . . . . . . . . . . . .	Number	 00000062h   
-mapaFileName . . . . . . . . . .	Byte	 00000F6D _DATA	
+mapaFileName . . . . . . . . . .	Byte	 00001C8F _DATA	
 maxMap . . . . . . . . . . . . .	Word	 00000004 _DATA	
 minMap . . . . . . . . . . . . .	Word	 00000002 _DATA	
-playerSymbol . . . . . . . . . .	Byte	 00000F79 _DATA	
-playerX  . . . . . . . . . . . .	Byte	 00000F7A _DATA	
-playerY  . . . . . . . . . . . .	Byte	 00000F7B _DATA	
+playerSymbol . . . . . . . . . .	Byte	 00001C9B _DATA	
+playerX  . . . . . . . . . . . .	Byte	 00001C9C _DATA	
+playerY  . . . . . . . . . . . .	Byte	 00001C9D _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
+respostaJogador  . . . . . . . .	Byte	 00001D38 _DATA	
+respostaOriginal . . . . . . . .	Byte	 00001D34 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
