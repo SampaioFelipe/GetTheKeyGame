@@ -15,18 +15,21 @@ logo3 byte '\ \ \__ \  \ \  __\   \/_/\ \/    \/_/\ \/ \ \  __ \  \ \  __\      
 logo4 byte ' \ \_____\  \ \_____\    \ \_\       \ \_\  \ \_\ \_\  \ \_____\     \ \_\ \_\  \ \_____\  \/\_____\ ',0dh,0ah,0
 logo5 byte '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/      \/_/\/_/   \/_____/   \/_____/ ',0dh,0ah,0
 
-mapHeight = 35
+mapHeight = 36
 mapWidth = 98 ; LENGHTOF logo1 = 98
 
-BUFSIZE = mapHeight*mapWidth + 200 ; O tamanho não é esse
+BUFSIZE = mapHeight*mapWidth + 200 ; tamanho do mapa mais o tamanho do enigma+resposta
 BUFFERMAPA BYTE BUFSIZE DUP (?)
-mapMatrix BYTE BUFSIZE-468 DUP (?) ; 200 referente a parte do enigma e 268 devido as paredes laterais
+mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
 mapaFileName BYTE 'nivel1.mapa',0
 
 ;Estrutura Player
 playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
 playerX BYTE ? ; Posicao X do jogador na tela
+playerXAux BYTE ?
 playerY BYTE ? ; Posicao Y do jogador na tela
+playerYAux BYTE ?
+dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (uma solucao e armazenar o offset na matriz)
 
 ; Estrutura Enigma
 enigma BYTE 150 DUP (?)
@@ -35,8 +38,9 @@ respostaJogador BYTE 4 DUP(?)
 
 .code
 main PROC
+
 INICIALIZADOR: ; Configuracoes iniciais
-	call LoadMapa
+	call LoadMapaFile
 	call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
 	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
 	sub dl, LENGTHOF logo1
@@ -66,13 +70,49 @@ exit
 main ENDP
 
 ;---------------------------------------------------
+GetElementoMatriz PROC
+;
+; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
+; Recebe: nada
+; Retorna: al com o elemento encontrado
+;---------------------------------------------------
+	push ebp
+	mov ebp,esp
+
+	mov eax, 0
+
+	mov ax, [ebp + 10] ; Y
+	mov bx, [ebp + 8] ; X
+
+	sub al, BYTE PTR minMap+1
+	dec al
+
+	sub bl, BYTE PTR minMap
+	dec bl
+
+	mov cl, 98
+	mul cl ; AX = Y * 98
+
+	movzx cx, bl
+	add ax, cx
+
+
+	mov esi, OFFSET mapMatrix
+	add esi, eax
+	mov al, [esi]
+
+	pop ebp
+	ret 4
+GetElementoMatriz ENDP
+
+;---------------------------------------------------
 HandleControl PROC
 ;
 ; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
 ; Recebe: eax = tecla que foi acionada
 ; Retorna: 
 ;---------------------------------------------------
-
+	
 	cmp ah, 48h ; Verifica se foi a tecla de seta pra cima
 	je UP
 	cmp ah, 50h ; Seta para baixo
@@ -87,33 +127,77 @@ UP:
 	inc bl
 	cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
 	je fim
-	call ClearPlayer ; Limpa o antigo local do jogador
-	dec playerY ; Move o jogador para cima
-	jmp fim
+
+	mov cl, playerX
+	mov playerXAux, cl
+
+	mov cl, playerY
+	dec cl
+	mov playerYAux, cl
+
+	jmp VerificaColisaoLabirinto
 DOWN:
 	mov bl, BYTE PTR maxMap+1
 	dec bl
 	cmp playerY, bl
 	je fim
-	call ClearPlayer ; Limpa o antigo local do jogador
-	inc playerY
-	jmp fim
+
+	mov cl, playerX
+	mov playerXAux, cl
+
+	mov cl, playerY
+	inc cl
+	mov playerYAux, cl
+
+	jmp VerificaColisaoLabirinto
 Left:
 	mov bl, BYTE PTR minMap
 	inc bl
 	cmp playerX, bl
 	je fim
-	call ClearPlayer ; Limpa o antigo local do jogador
-	dec playerX
-	jmp fim
+
+	mov cl, playerX
+	dec cl
+	mov playerXAux, cl
+
+	mov cl, playerY
+	mov playerYAux, cl
+
+	jmp VerificaColisaoLabirinto
 Right:
 	mov bl, BYTE PTR maxMap
 	dec bl
 	cmp playerX, bl
 	je fim
-	call ClearPlayer ; Limpa o antigo local do jogador
-	inc playerX
+
+	mov cl, playerX
+	inc cl
+	mov playerXAux, cl
+
+	mov cl, playerY
+	mov playerYAux, cl
+
+	jmp VerificaColisaoLabirinto
+
+VerificaColisaoLabirinto:
+	; Verifica se há colisão com os elementos da matriz
+	movzx cx, playerYAux
+	;dec cx
+	push cx
+	movzx cx, playerXAux
+	push cx
+	call GetElementoMatriz
+
+	.IF al == 0dbh
 	jmp fim
+	.Else
+	call ClearPlayer
+	mov cl, playerXAux
+	mov playerX, cl
+	mov cl, playerYAux
+	mov playerY, cl
+	.ENDIF
+
 Fim:
 	call DrawPlayer ; Desenha o jogador na nova posicao
 	ret
@@ -169,58 +253,98 @@ ClearPlayer PROC
 ClearPlayer ENDP
 
 ;---------------------------------------------------
-LoadMapa PROC
+LoadMapaFile PROC
 ;
 ; Carrega na memoria um mapa
 ; Recebe: ? 
 ; Retorna: ?
 ;---------------------------------------------------
-	mov edx, OFFSET mapaFileName
+; Abertura do arquivo	
+	mov edx, OFFSET mapaFileName 
 	call OpenInputFile
 
-	;mov  eax,fileHandle
     mov  edx,OFFSET BUFFERMAPA
     mov  ecx,BUFSIZE
     call ReadFromFile
     ;jc   show_error_message
     ;mov  bytesRead,eax
 
+; Recupera as informacoes sobre a pergunta e o enigma 
 	mov edx,OFFSET BUFFERMAPA
 	mov eax, OFFSET enigma
-L1:
+; Identifica a pergunta
+PerguntaInicio:
 	mov cl, [edx]
 	cmp cl,'#'
-	call DumpRegs
-	je L2
+	je PerguntaFim
 	mov [eax], cl
 	inc eax
 	inc edx
-	jmp L1
-
-L2:
-	inc eax
+	jmp PerguntaInicio
+PerguntaFim:
+	
 	inc edx
 	mov eax, OFFSET respostaOriginal
-L3:
+; Identifica a resposta
+RespostaInicio:
 	mov cl, [edx]
 	cmp cl,'#'
-	call DumpRegs
-	je L4
+	je RespostaFim
 	mov [eax], cl
 	inc eax
 	inc edx
-	jmp L3
-L4:
+	jmp RespostaInicio
+RespostaFim:
 
-	;mov edx, OFFSET enigma
-	;call WriteString
-	;mov edx, OFFSET respostaOriginal
-	;call WriteString
+	add edx,3
+	mov eax, OFFSET mapMatrix
+	mov ebx, mapHeight*mapWidth
 
-	mov edx, OFFSET BUFFERMAPA
-	call WriteString
+; Inicializa a matriz do mapa
+MapaInicio:
+	mov cl, [edx]
+	
+	cmp cl, 0dh
+	jne ColocaNaMatriz
+
+	;Teste
+	;push eax
+	;mov al, 0dh
+	;call WriteChar
+	;mov al, 0ah
+	;call WriteChar
+	;pop eax
+	;Teste
+
+	add edx, 2
+	jmp MapaInicio
+
+ColocaNaMatriz:
+	.IF cl == 'x'
+	mov cl, 0dbh
+	.ELSEIF cl == 'p'
+	mov cl, 0bah
+	.ELSEIF cl == 'c'
+	mov cl, 0feh
+	.ENDIF
+	
+	;Teste
+	;push eax
+	;mov al, cl
+	;call WriteChar
+	;pop eax
+	;Teste
+
+	mov [eax], cl
+	inc eax
+	inc edx
+	dec ebx
+	jz MapaFim
+	jmp MapaInicio
+
+MapaFim:
 	ret
-LoadMapa ENDP
+LoadMapaFile ENDP
 
 ;---------------------------------------------------
 DrawLogo PROC
@@ -232,7 +356,6 @@ DrawLogo PROC
 	call GetTextColor
     push eax
 	
-	mov eax,0
 	mov eax,lightblue
 	call settextcolor
 
@@ -297,7 +420,7 @@ DrawEnigma PROC
 ; Retorna: ?
 ;---------------------------------------------------
 	mov al, '+'
-	mov ecx, LENGTHOF logo1
+	mov ecx, LENGTHOF logo1 - 1
 	inc CurrentLine
 	mov dl,Xmargin
 	mov dh,CurrentLine
@@ -309,19 +432,26 @@ L1:
 
 	mov dl,Xmargin
 	mov dh,CurrentLine
-	inc CurrentLine
 	call GoToxy
-	mov ecx, LENGTHOF logo1 - 2
 	call WriteChar
+	mov ecx, 5 ;Espacamento esquerdo para comecar a escrever a pergunta
 	mov al, ' '
 L2:
 	call WriteChar
 	loop L2
 
+	mov edx, OFFSET enigma
+	call WriteString
+
+	mov dl,Xmargin
+	mov dh,CurrentLine
+	add dl, 99 ; Aponta para o final da linha do meio da caixa do enigma
+	call GoToxy
 	mov al, '+'
 	call WriteChar
 
-	mov ecx, LENGTHOF logo1
+	inc CurrentLine
+	mov ecx, LENGTHOF logo1 - 1
 	mov dl,Xmargin
 	mov dh,CurrentLine
 	inc CurrentLine
@@ -339,6 +469,11 @@ DrawMapa PROC
 ; Recebe: ? 
 ; Retorna: ?
 ;---------------------------------------------------
+	call GetTextColor
+	push eax
+	mov eax,white
+	call settextcolor
+
 	mov al, 0dbh
 	mov ecx, mapWidth + 2
 	inc CurrentLine
@@ -347,24 +482,63 @@ DrawMapa PROC
 	mov minMap,dx
 	inc CurrentLine
 	call GoToxy
-L1:
+ParedeDeCima:
 	call WriteChar
-	loop L1
+	loop ParedeDeCima
+
+	mov ebx, OFFSET mapMatrix
 
 	mov al, 0dbh
 	mov ecx, mapHeight
-L2:
+Labirinto:
 	mov dl, BYTE PTR minMap
 	mov dh, CurrentLine
 	call GoToxy
-	call WriteChar
-	add dl, mapWidth + 1
-	call GoToxy
-	call WriteChar
-	inc CurrentLine
-	loop L2
+	call WriteChar; Inicio parede externa esquerda
 
-	mov al, 0feh
+	push ecx
+	mov ecx, mapWidth
+	call GetTextColor
+	push eax
+	mov eax,gray
+	call settextcolor
+	LabirintoInterno:
+		mov al, [ebx]
+		.IF al == 0bah
+			call GetTextColor
+			push eax
+			mov eax,lightRed
+			call settextcolor
+			mov al, 0bah
+			call WriteChar
+			pop eax
+			call settextcolor
+		.ELSEIF al == 0feh
+			call GetTextColor
+			push eax
+			mov eax,lightgreen
+			call settextcolor
+			mov al, 0feh
+			call WriteChar
+			pop eax
+			call settextcolor
+		.ELSE
+			call WriteChar
+		.ENDIF
+		
+		inc ebx
+		loop LabirintoInterno
+	pop eax
+	call settextcolor
+	pop ecx
+
+	mov al, 0dbh
+	call WriteChar; Inicio parede externa esquerda
+	inc CurrentLine
+	dec cx
+	jnz Labirinto
+
+	mov al, 0dbh
 	mov ecx, mapWidth + 2
 	mov dl,Xmargin
 	mov dh,CurrentLine
@@ -376,6 +550,9 @@ L3:
 	mov dl, Xmargin
 	add dl, mapWidth + 1
 	mov maxMap,dx
+
+	pop eax
+
 	ret
 DrawMapa ENDP
 
