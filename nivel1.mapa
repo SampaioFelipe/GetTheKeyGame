@@ -1,14 +1,14 @@
-pergunta#resposta#
-1                       x                                                     x                  3
+pergunta#resp#
+                        x                                                     x                  3
                         x                                                     x                   
    xxxxxxxxxxxxxxxxxx   x   xxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxx  
    x                    x   x                   x               x             x                x  
    x                    x   x                   x               x             x        x   x   x  
-   xxxxxxxxxxxxxxxxxx   x   xxxxxxxxxxxxxxxxx   x   xxxxxxxxxxxxxxxxxxxxxxx   x   xxxxxx   x   x  
-   x                x   x   x                   x               x             x        x   x   x  
-   x                x   x   xxxxx               x               x             xxxxxx   xxxxxxxxx  
-   x                x   x       x   xxxxxxxxx   xxxxxxxxxxxx    x   xxxxxxx   x                   
-   xxxxxxxxxxxxxx   x   x       x                          x    x   x         x                   
+   xxxxxxxx  xxxxxxxxxxxx   xxxxxxxxxxxxxxxxx   x   xxxxxxxxxxxxxxxxxxxxxxx   x   xxxxxx   x   x  
+   x                    x   x                   x               x             x        x   x   x  
+   x                    x   xxxxx               x               x             xxxxxx   xxxxxxxxx  
+ 1 x                    x       x   xxxxxxxxx   xxxxxxxxxxxx    x   xxxxxxx   x                   
+xxxxxxxxxxxxxxxxx       x       x                          x    x   x         x                   
    x                    x   x   x                          x    xxxxx   xxx   x   xxxxxxxxxxxxxx  
    x                    x   x   xxxxxxxxxxxxxxxxxxxxxxxxxxxx    x   x                          x  
    x   xxxxxxxxxxxxxxxxxx   x                              x    x   x                          x  

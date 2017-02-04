@@ -3,7 +3,7 @@ INCLUDE Irvine32.inc
 .data
 Xmargin BYTE ? ; Margem da lateral esquerda usada para centralizar o ambiente do jogo
 CurrentLine BYTE 0 ; Auxilia na contagem de linhas ao desenhar o cenario
-
+CurrentColumn BYTE 0;
 minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
 			  ; Formato (Limite X | Limite Y)
 maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
@@ -22,6 +22,7 @@ BUFSIZE = mapHeight*mapWidth + 200 ; tamanho do mapa mais o tamanho do enigma+re
 BUFFERMAPA BYTE BUFSIZE DUP (?)
 mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
 mapaFileName BYTE 'nivel1.mapa',0
+elementoAux BYTE ?
 
 ;Estrutura Player
 playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
@@ -33,8 +34,16 @@ dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (um
 
 ; Estrutura Enigma
 enigma BYTE 150 DUP (?)
+labelResposta BYTE " RESPOSTA: ",0
+OFFSETRESPOSTA = 74
 respostaOriginal BYTE 4 DUP(?)
 respostaJogador BYTE 4 DUP(?)
+;respostaJogador BYTE "resp"
+statusResposta BYTE 0
+posRespostaJogador WORD ?
+
+; Portas
+posPortas WORD 4 DUP (?)
 
 .code
 main PROC
@@ -42,6 +51,9 @@ main PROC
 INICIALIZADOR: ; Configuracoes iniciais
 	call LoadMapaFile
 	call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
+	
+	;Funcao que chamara o menu, se for selecionado "jogar" prossegue, senao vai para intrucoes
+	
 	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
 	sub dl, LENGTHOF logo1
 	shr dl,1
@@ -58,9 +70,21 @@ INICIALIZADOR: ; Configuracoes iniciais
 	mov playerY, al
 	call DrawPlayer ; Desenha o jogador na tela na posicao configurada
 MAINLOOP:
-	call ReadKey ; Le do teclado alguma tecla
-	jz FIM ; Se nao fou apertada nenhuma tecla, pula para o fim da iteracao atual
-	call HandleControl ; Caso contrario e realizada uma acao em funcao da tecla apertada
+	movzx cx, playerY
+	push cx
+	movzx cx, playerX
+	push cx
+	call GetElementoMatriz
+	.IF al == ' '
+		call ReadKey ; Le do teclado alguma tecla
+		jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+		call HandleControl ; Caso contrario e realizada uma acao em funcao da tecla apertada
+	.ELSE
+		mov elementoAux, al ; Coloca em elementoAux o caracter encontrado na posicao onde o jogador esta
+		call ReadKey ; Le do teclado alguma tecla
+		jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+		call HandleSenha
+	.ENDIF
 FIM:
 	mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
 				; cause bugs na leitura das teclas
@@ -72,8 +96,9 @@ main ENDP
 ;---------------------------------------------------
 GetElementoMatriz PROC
 ;
-; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
-; Recebe: nada
+; Mapeia um par ordenado (x,y), passado por parametro, em posicao de memoria da matriz do mapa
+; e recupera o elemento que armazenado nessa posicao
+; Recebe: Par ordenado (x,y) por parametro
 ; Retorna: al com o elemento encontrado
 ;---------------------------------------------------
 	push ebp
@@ -107,109 +132,278 @@ GetElementoMatriz ENDP
 
 ;---------------------------------------------------
 HandleControl PROC
-;
 ; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
 ; Recebe: eax = tecla que foi acionada
-; Retorna: 
+; Retorna: Nada
 ;---------------------------------------------------
-	
-	cmp ah, 48h ; Verifica se foi a tecla de seta pra cima
-	je UP
-	cmp ah, 50h ; Seta para baixo
-	je Down
-	cmp ah, 4dh ; Seta para a direita
-	je Right
-	cmp ah, 4bh ; Seta para a esquerda
-	je Left
-	jmp fim ; Se nao foi nenhuma das alternativas, o processo e encerrado
-UP:
-	mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
-	inc bl
-	cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
-	je fim
+	.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
+		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
+		inc bl
+		cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+		je Fim
 
-	mov cl, playerX
-	mov playerXAux, cl
+		mov cl, playerX
+		mov playerXAux, cl
 
-	mov cl, playerY
-	dec cl
-	mov playerYAux, cl
+		mov cl, playerY
+		dec cl
+		mov playerYAux, cl
 
-	jmp VerificaColisaoLabirinto
-DOWN:
-	mov bl, BYTE PTR maxMap+1
-	dec bl
-	cmp playerY, bl
-	je fim
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 50h ; Seta para baixo
+		mov bl, BYTE PTR maxMap+1
+		dec bl
+		cmp playerY, bl
+		je Fim
 
-	mov cl, playerX
-	mov playerXAux, cl
+		mov cl, playerX
+		mov playerXAux, cl
 
-	mov cl, playerY
-	inc cl
-	mov playerYAux, cl
+		mov cl, playerY
+		inc cl
+		mov playerYAux, cl
 
-	jmp VerificaColisaoLabirinto
-Left:
-	mov bl, BYTE PTR minMap
-	inc bl
-	cmp playerX, bl
-	je fim
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 4dh ; Seta para a direita
+		mov bl, BYTE PTR maxMap
+		dec bl
+		cmp playerX, bl
+		je Fim
 
-	mov cl, playerX
-	dec cl
-	mov playerXAux, cl
+		mov cl, playerX
+		inc cl
+		mov playerXAux, cl
 
-	mov cl, playerY
-	mov playerYAux, cl
+		mov cl, playerY
+		mov playerYAux, cl
 
-	jmp VerificaColisaoLabirinto
-Right:
-	mov bl, BYTE PTR maxMap
-	dec bl
-	cmp playerX, bl
-	je fim
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 4bh ; Seta para a esquerda
+		mov bl, BYTE PTR minMap
+		inc bl
+		cmp playerX, bl
+		je Fim
 
-	mov cl, playerX
-	inc cl
-	mov playerXAux, cl
+		mov cl, playerX
+		dec cl
+		mov playerXAux, cl
 
-	mov cl, playerY
-	mov playerYAux, cl
+		mov cl, playerY
+		mov playerYAux, cl
 
-	jmp VerificaColisaoLabirinto
+		jmp VerificaColisaoLabirinto
+	;.ELSEIF ah = ;Se for a tecla ESC
+	.ELSE
+		jmp Fim ;
+	.ENDIF	
 
 VerificaColisaoLabirinto:
 	; Verifica se há colisão com os elementos da matriz
 	movzx cx, playerYAux
-	;dec cx
 	push cx
 	movzx cx, playerXAux
 	push cx
 	call GetElementoMatriz
 
 	.IF al == 0dbh
-	jmp fim
+		jmp fim
+	;Aqui eu posso colocar uma verificação do para ver se a senha já está correta, se não estiver bloqueia o movimento da porta também.
 	.Else
-	call ClearPlayer
-	mov cl, playerXAux
-	mov playerX, cl
-	mov cl, playerYAux
-	mov playerY, cl
+		call ClearPlayer
+		mov cl, playerXAux
+		mov playerX, cl
+		mov cl, playerYAux
+		mov playerY, cl
 	.ENDIF
 
-Fim:
 	call DrawPlayer ; Desenha o jogador na nova posicao
+Fim:
 	ret
 HandleControl ENDP
 
-;---------------------------------------------------	
+;---------------------------------------------------
+HandleSenha PROC
+;
+; ?
+; Recebe: eax = tecla que foi acionada, bl
+; Retorna: Nada
+;---------------------------------------------------
+	call VerificaSenha
+	.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
+		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
+		inc bl
+		cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+		je Fim
+
+		mov cl, playerX
+		mov playerXAux, cl
+
+		mov cl, playerY
+		dec cl
+		mov playerYAux, cl
+
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 50h ; Seta para baixo
+		mov bl, BYTE PTR maxMap+1
+		dec bl
+		cmp playerY, bl
+		je Fim
+
+		mov cl, playerX
+		mov playerXAux, cl
+
+		mov cl, playerY
+		inc cl
+		mov playerYAux, cl
+
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 4dh ; Seta para a direita
+		mov bl, BYTE PTR maxMap
+		dec bl
+		cmp playerX, bl
+		je Fim
+
+		mov cl, playerX
+		inc cl
+		mov playerXAux, cl
+
+		mov cl, playerY
+		mov playerYAux, cl
+
+		jmp VerificaColisaoLabirinto
+	.ELSEIF ah == 4bh ; Seta para a esquerda
+		mov bl, BYTE PTR minMap
+		inc bl
+		cmp playerX, bl
+		je Fim
+
+		mov cl, playerX
+		dec cl
+		mov playerXAux, cl
+
+		mov cl, playerY
+		mov playerYAux, cl
+
+		jmp VerificaColisaoLabirinto
+	;.ELSEIF ah = ;Se for a tecla ESC
+	.ELSE
+		mov bl, elementoAux
+		mov edx, OFFSET respostaJogador
+		.IF bl == '1'
+			mov [edx], al
+		.ELSEIF bl == '2'
+			mov [edx + 1], al
+		.ELSEIF bl == '3'
+			mov [edx + 2], al
+		.ELSEIF bl == '4'
+			mov [edx + 3], al
+		.ENDIF
+		call DrawRespostaJogador
+		jmp Fim ;
+	.ENDIF	
+
+VerificaColisaoLabirinto:
+	; Verifica se há colisão com os elementos da matriz
+	movzx cx, playerYAux
+	push cx
+	movzx cx, playerXAux
+	push cx
+	call GetElementoMatriz
+
+	.IF al == 0dbh
+		jmp fim
+	.Else
+		mov dl, playerX
+		mov dh, playerY
+		mov bl, elementoAux
+		call GetTextColor
+		push eax
+		.IF bl == '1'
+			mov eax,white + (green * 16)
+			call settextcolor
+			mov al, '1'
+		.ELSEIF bl == '2'
+			mov eax,black + (lightmagenta * 16)
+			call settextcolor
+			mov al, '2'
+		.ELSEIF bl == '3'
+			mov eax,black + (yellow * 16)
+			call settextcolor
+			mov al, '3'
+		.ELSEIF bl == '4'
+			mov eax,white + (lightBlue * 16)
+			call settextcolor
+			mov al, '4'
+		.ENDIF
+		call GoToxy
+
+		call WriteChar
+		
+		pop eax
+		call settextcolor
+
+		;call ClearPlayer
+		mov cl, playerXAux
+		mov playerX, cl
+		mov cl, playerYAux
+		mov playerY, cl
+	.ENDIF
+
+	call DrawPlayer ; Desenha o jogador na nova posicao
+Fim:
+	ret
+HandleSenha ENDP
+
+;---------------------------------------------------
+VerificaSenha PROC
+; ?
+; Recebe: Nada
+; Retorna: Nada
+;---------------------------------------------------
+	mov esi, OFFSET respostaOriginal
+	mov edx, OFFSET respostaJogador
+	mov ecx, 4
+Verifica:
+	mov al, [esi]
+	mov bl, [edx]
+	cmp al,bl
+	jnz Diferente
+
+	inc esi
+	inc edx
+	loop Verifica
+
+	call GetTextColor
+    push eax
+	mov eax,lightgreen + (lightgreen * 16)
+	call settextcolor
+
+	mov esi, OFFSET posPortas
+	mov ecx, 4
+	mov al, ' '
+AbrePorta:
+	mov dx, [esi]
+	call GoToXY
+	call WriteChar
+	add esi, 2
+	loop AbrePorta
+
+	pop eax
+	call settextcolor
+
+	mov statusResposta, 1
+
+Diferente:
+	ret
+VerificaSenha ENDP
+
+;---------------------------------------------------
 DrawPlayer PROC
 ;
 ; Desenha na tela o jogador em sua posicao atual
 ; Recebe: Nada
 ; Retorna: Nada
-;---------------------------------------------------	
+;---------------------------------------------------
 	call GetTextColor
     push eax
 
@@ -307,33 +501,17 @@ MapaInicio:
 	cmp cl, 0dh
 	jne ColocaNaMatriz
 
-	;Teste
-	;push eax
-	;mov al, 0dh
-	;call WriteChar
-	;mov al, 0ah
-	;call WriteChar
-	;pop eax
-	;Teste
-
 	add edx, 2
 	jmp MapaInicio
 
 ColocaNaMatriz:
 	.IF cl == 'x'
-	mov cl, 0dbh
+		mov cl, 0dbh
 	.ELSEIF cl == 'p'
-	mov cl, 0bah
+		mov cl, 0bah
 	.ELSEIF cl == 'c'
-	mov cl, 0feh
+		mov cl, 0feh
 	.ENDIF
-	
-	;Teste
-	;push eax
-	;mov al, cl
-	;call WriteChar
-	;pop eax
-	;Teste
 
 	mov [eax], cl
 	inc eax
@@ -415,7 +593,7 @@ DrawLogo ENDP
 ;---------------------------------------------------
 DrawEnigma PROC
 ;
-; Desenha na tela o local enigma e o enigma propriamente dito
+; Desenha na tela o local do enigma e o enigma propriamente dito
 ; Recebe: ? 
 ; Retorna: ?
 ;---------------------------------------------------
@@ -445,6 +623,24 @@ L2:
 
 	mov dl,Xmargin
 	mov dh,CurrentLine
+	add dl, OFFSETRESPOSTA ; Aponta para o final da linha do meio da caixa do enigma
+	call GoToxy
+	mov al, '+'
+	call WriteChar
+
+	mov edx, OFFSET labelResposta
+	call WriteString
+
+	mov dl, LENGTHOF labelResposta
+	add dl, Xmargin
+	add dl, OFFSETRESPOSTA
+	mov dh,CurrentLine
+	mov posRespostaJogador, dx
+
+	call DrawRespostaJogador
+
+	mov dl,Xmargin
+	mov dh,CurrentLine
 	add dl, 99 ; Aponta para o final da linha do meio da caixa do enigma
 	call GoToxy
 	mov al, '+'
@@ -462,6 +658,65 @@ L3:
 	ret
 DrawEnigma ENDP
 
+;---------------------------------------------------
+DrawRespostaJogador PROC
+;
+; ?
+; Recebe: ? 
+; Retorna: ?
+;---------------------------------------------------
+	call GetTextColor
+	push eax
+
+	mov dx, posRespostaJogador
+	call GoToxy
+
+	mov edx, OFFSET respostaJogador
+
+	mov eax,white + (green * 16)
+	call settextcolor
+	
+	mov al, ' '
+	call WriteChar
+	mov al, [edx]
+	call WriteChar
+	mov al, ' '
+	call WriteChar
+
+	mov eax,black + (lightmagenta * 16)
+	call settextcolor
+
+	mov al, ' '
+	call WriteChar
+	mov al, [edx+1]
+	call WriteChar
+	mov al, ' '
+	call WriteChar
+
+	mov eax,black + (yellow * 16)
+	call settextcolor
+
+	mov al, ' '
+	call WriteChar
+	mov al, [edx+2]
+	call WriteChar
+	mov al, ' '
+	call WriteChar
+
+	mov eax,white + (lightblue * 16)
+	call settextcolor
+
+	mov al, ' '
+	call WriteChar
+	mov al, [edx+3]
+	call WriteChar
+	mov al, ' '
+	call WriteChar
+
+	pop eax
+	call settextcolor
+	ret
+DrawRespostaJogador ENDP
 ;---------------------------------------------------
 DrawMapa PROC
 ;
@@ -482,11 +737,13 @@ DrawMapa PROC
 	mov minMap,dx
 	inc CurrentLine
 	call GoToxy
+
 ParedeDeCima:
 	call WriteChar
 	loop ParedeDeCima
 
 	mov ebx, OFFSET mapMatrix
+	mov esi, OFFSET posPortas
 
 	mov al, 0dbh
 	mov ecx, mapHeight
@@ -503,31 +760,51 @@ Labirinto:
 	mov eax,gray
 	call settextcolor
 	LabirintoInterno:
+		call GetTextColor
+		push eax
 		mov al, [ebx]
 		.IF al == 0bah
-			call GetTextColor
-			push eax
+			push dx
+
+			add dl, CurrentColumn
+			inc dl
+			mov [esi], dx
+
+			pop dx
+			add esi,2
 			mov eax,lightRed
 			call settextcolor
 			mov al, 0bah
-			call WriteChar
-			pop eax
-			call settextcolor
 		.ELSEIF al == 0feh
-			call GetTextColor
-			push eax
 			mov eax,lightgreen
 			call settextcolor
 			mov al, 0feh
-			call WriteChar
-			pop eax
+		.ELSEIF al == '1'
+			mov eax,white + (green * 16)
 			call settextcolor
-		.ELSE
-			call WriteChar
+			mov al, '1'
+		.ELSEIF al == '2'
+			mov eax,black + (lightmagenta * 16)
+			call settextcolor
+			mov al, '2'
+		.ELSEIF al == '3'
+			mov eax,black + (yellow * 16)
+			call settextcolor
+			mov al, '3'
+		.ELSEIF al == '4'
+			mov eax,white + (lightBlue * 16)
+			call settextcolor
+			mov al, '4'
 		.ENDIF
+
+		call WriteChar
+		pop eax
+		call settextcolor
 		
 		inc ebx
-		loop LabirintoInterno
+		inc CurrentColumn
+		dec cx
+		jnz LabirintoInterno
 	pop eax
 	call settextcolor
 	pop ecx
@@ -535,6 +812,7 @@ Labirinto:
 	mov al, 0dbh
 	call WriteChar; Inicio parede externa esquerda
 	inc CurrentLine
+	mov CurrentColumn, 0
 	dec cx
 	jnz Labirinto
 
