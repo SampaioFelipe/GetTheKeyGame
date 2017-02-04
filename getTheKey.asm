@@ -4,16 +4,34 @@ INCLUDE Irvine32.inc
 Xmargin BYTE ? ; Margem da lateral esquerda usada para centralizar o ambiente do jogo
 CurrentLine BYTE 0 ; Auxilia na contagem de linhas ao desenhar o cenario
 CurrentColumn BYTE 0;
+
+logo1 BYTE ' ______     ______     ______      ______   __  __     ______        __  __     ______     __  __ ',0dh,0ah,0
+logo2 BYTE '/\  ___\   /\  ___\   /\__  _\    /\__  _\ /\ \_\ \   /\  ___\      /\ \/ /    /\  ___\   /\ \_\ \ ',0dh,0ah,0
+logo3 BYTE '\ \ \__ \  \ \  __\   \/_/\ \/    \/_/\ \/ \ \  __ \  \ \  __\      \ \  _"-.  \ \  __\   \ \____ \',0dh,0ah,0
+logo4 BYTE ' \ \_____\  \ \_____\    \ \_\       \ \_\  \ \_\ \_\  \ \_____\     \ \_\ \_\  \ \_____\  \/\_____\ ',0dh,0ah,0
+logo5 BYTE '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/      \/_/\/_/   \/_____/   \/_____/ ',0dh,0ah,0
+
+msgVenceu1 BYTE " _  _ ____ ____ ____    _  _ ____ _  _ ____ ____ _  _ ",0dh,0ah,0
+msgVenceu2 BYTE " |  | |  | |    |___    |  | |___ |\ | |    |___ |  | ",0dh,0ah,0
+msgVenceu3 BYTE "  \/  |__| |___ |___     \/  |___ | \| |___ |___ |__| ",0dh,0ah,0
+msgVenceu4 BYTE "                                                      ",0dh,0ah,0
+msgVenceu5 BYTE "      Pressione qualquer tecla para continuar         ",0dh,0ah,0
+
+; Menu
+jogarString BYTE "JOGAR",0
+posJogar WORD ?
+instrucoesString BYTE "INSTRUCOES",0
+posInst WORD ?
+msgMenu BYTE '"Maximize a janela antes de iniciar o jogo para uma melhor experiencia."',0
+opcaoSelecionada BYTE 0
+textoInst BYTE "Aqui vai o texto de instrucao.",0
+textoEsc BYTE "Tem certeza que deseja sair?"
+answer WORD ?
+; Mapa
 minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
 			  ; Formato (Limite X | Limite Y)
 maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
 			  ; Formato (Limite X | Limite Y)
-
-logo1 byte ' ______     ______     ______      ______   __  __     ______        __  __     ______     __  __ ',0dh,0ah,0
-logo2 byte '/\  ___\   /\  ___\   /\__  _\    /\__  _\ /\ \_\ \   /\  ___\      /\ \/ /    /\  ___\   /\ \_\ \ ',0dh,0ah,0
-logo3 byte '\ \ \__ \  \ \  __\   \/_/\ \/    \/_/\ \/ \ \  __ \  \ \  __\      \ \  _"-.  \ \  __\   \ \____ \',0dh,0ah,0
-logo4 byte ' \ \_____\  \ \_____\    \ \_\       \ \_\  \ \_\ \_\  \ \_____\     \ \_\ \_\  \ \_____\  \/\_____\ ',0dh,0ah,0
-logo5 byte '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/      \/_/\/_/   \/_____/   \/_____/ ',0dh,0ah,0
 
 mapHeight = 36
 mapWidth = 98 ; LENGHTOF logo1 = 98
@@ -38,7 +56,6 @@ labelResposta BYTE " RESPOSTA: ",0
 OFFSETRESPOSTA = 74
 respostaOriginal BYTE 4 DUP(?)
 respostaJogador BYTE 4 DUP(?)
-;respostaJogador BYTE "resp"
 statusResposta BYTE 0
 posRespostaJogador WORD ?
 
@@ -47,17 +64,13 @@ posPortas WORD 4 DUP (?)
 
 .code
 main PROC
-
-INICIALIZADOR: ; Configuracoes iniciais
 	call LoadMapaFile
-	call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
-	
-	;Funcao que chamara o menu, se for selecionado "jogar" prossegue, senao vai para intrucoes
-	
+INICIALIZADOR: ; Configuracoes iniciais
+	call MenuInicial
 	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
 	sub dl, LENGTHOF logo1
 	shr dl,1
-	mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+	mov Xmargin,dl ; Calcula a margem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
 
 	call DrawLogo ; Desenha o logo do jogo 
 	call DrawEnigma ; Desenha o local onde ficara o enigma e o proprio enigma (temos que resolver isso)
@@ -79,11 +92,15 @@ MAINLOOP:
 		call ReadKey ; Le do teclado alguma tecla
 		jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
 		call HandleControl ; Caso contrario e realizada uma acao em funcao da tecla apertada
+		cmp al,1
+		jz INICIALIZADOR
 	.ELSE
 		mov elementoAux, al ; Coloca em elementoAux o caracter encontrado na posicao onde o jogador esta
 		call ReadKey ; Le do teclado alguma tecla
 		jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
 		call HandleSenha
+		cmp al,1
+		jz INICIALIZADOR
 	.ENDIF
 FIM:
 	mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
@@ -94,8 +111,198 @@ exit
 main ENDP
 
 ;---------------------------------------------------
+ReiniciaVariaveis PROC
+; ?
+; Recebe: ?
+; Retorna: ?
+;---------------------------------------------------
+	mov edx, OFFSET respostaJogador
+	mov bl, ' '
+	mov ecx, 4
+L1:
+	mov [edx], bl
+	inc edx
+	loop L1
+
+	mov statusResposta, 0
+
+	ret
+ReiniciaVariaveis ENDP
+;---------------------------------------------------
+MenuInicial PROC
+; ?
+; Recebe: ?
+; Retorna: ?
+;---------------------------------------------------
+INICIALIZADOR:
+	mov opcaoSelecionada, 0
+	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela (DL = X e DH = Y)
+	push dx
+	; Desenha o Logo
+	sub dl, LENGTHOF logo1
+	shr dl,1
+	mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+	call DrawLogo ; Desenha o logo do jogo
+	
+	mov al, '_'
+	mov ecx, LENGTHOF logo1
+	mov dl,Xmargin
+	mov dh,CurrentLine
+	inc CurrentLine
+	call GoToxy 
+L1:
+	call WriteChar
+	loop L1
+
+	add CurrentLine, 1
+
+	pop dx
+	push dx
+
+	sub dl, LENGTHOF msgMenu
+	shr dl,1
+	mov dh,CurrentLine
+	call GoToxy
+	mov edx, OFFSET msgMenu
+	call WriteString
+
+	add CurrentLine, 5
+
+	pop dx
+	push dx
+
+	call GetTextColor
+	push eax
+	; Desenha a opcao Jogar
+	sub dl, LENGTHOF jogarString
+	shr dl,1
+	mov dh,CurrentLine
+	mov posJogar, dx
+	dec dl
+	call GoToxy
+	mov al, '>'
+	call WriteChar
+	mov eax,black + (white * 16)
+	call settextcolor
+	mov edx, OFFSET JogarString
+	call WriteString
+	
+	pop eax
+	call settextcolor
+	
+	mov al, '<'
+	call WriteChar
+	
+	add CurrentLine,2
+
+	pop dx
+	; Desenha a opcao Intrucoes
+	sub dl, LENGTHOF instrucoesString
+	shr dl,1
+	mov dh,CurrentLine
+	mov posInst, dx
+	call GoToxy
+	mov edx, OFFSET instrucoesString
+	call WriteString
+	 
+MAINLOOP:
+	call ReadKey
+	jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+	
+	.IF ah == 48h ; Se for seta para cima
+		mov opcaoSelecionada, 0
+
+		mov dx, posInst
+		dec dl
+		call GoToxy
+		mov al, ' '
+		call WriteChar
+		mov edx, OFFSET instrucoesString
+		call WriteString
+		mov al, ' '
+		call WriteChar
+
+		call GetTextColor
+		push eax
+		
+		mov dx, posJogar
+		dec dl
+		call GoToxy
+		mov al, '>'
+		call WriteChar
+		mov eax,black + (white * 16)
+		call settextcolor
+		mov edx, OFFSET JogarString
+		call WriteString
+		
+		pop eax
+		call settextcolor
+
+		mov al, '<'
+		call WriteChar
+
+	.ELSEIF ah == 50h
+		mov opcaoSelecionada, 1
+
+		mov dx, posJogar
+		dec dl
+		call GoToxy
+		mov al, ' '
+		call WriteChar
+		mov edx, OFFSET jogarString
+		call WriteString
+		mov al, ' '
+		call WriteChar
+
+		call GetTextColor
+		push eax
+		
+		
+		mov dx, posInst
+		dec dl
+		call GoToxy
+		mov al, '>'
+		call WriteChar
+		mov eax,black + (white * 16)
+		call settextcolor
+		mov edx, OFFSET instrucoesString
+		call WriteString
+		
+		pop eax
+		call settextcolor
+
+		mov al, '<'
+		call WriteChar
+
+	.ELSEIF al == 0dh
+		mov al, opcaoSelecionada
+		.IF al == 0
+			jmp RETORNA
+		.ELSEIF al == 1
+			call Clrscr
+
+			mov dh,5
+			mov dl,5
+			call GoToxy
+			mov edx, OFFSET textoInst
+			call WriteString
+			
+			call readChar
+			call Clrscr
+			jmp INICIALIZADOR
+		.ENDIF
+	.ENDIF
+FIM:
+	mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
+				; cause bugs na leitura das teclas
+	call delay
+	jmp MainLoop
+
+RETORNA:
+	call Clrscr
+MenuInicial ENDP
+;---------------------------------------------------
 GetElementoMatriz PROC
-;
 ; Mapeia um par ordenado (x,y), passado por parametro, em posicao de memoria da matriz do mapa
 ; e recupera o elemento que armazenado nessa posicao
 ; Recebe: Par ordenado (x,y) por parametro
@@ -120,7 +327,6 @@ GetElementoMatriz PROC
 
 	movzx cx, bl
 	add ax, cx
-
 
 	mov esi, OFFSET mapMatrix
 	add esi, eax
@@ -192,7 +398,11 @@ HandleControl PROC
 		mov playerYAux, cl
 
 		jmp VerificaColisaoLabirinto
-	;.ELSEIF ah = ;Se for a tecla ESC
+	.ELSEIF al == 01bh ; Tecla ESC
+		mov al, 1
+		call clrscr
+		call ReiniciaVariaveis
+		jmp RETORNA
 	.ELSE
 		jmp Fim ;
 	.ENDIF	
@@ -207,28 +417,103 @@ VerificaColisaoLabirinto:
 
 	.IF al == 0dbh
 		jmp fim
-	;Aqui eu posso colocar uma verificação do para ver se a senha já está correta, se não estiver bloqueia o movimento da porta também.
-	.Else
+	.ELSEIF al == 0bah
+		mov bl, statusResposta
+		.IF bl == 0
+			jmp fim
+		.ENDIF
+	.ELSEIF al == 0feh ; Encontrou a chave e venceu
+		call GetTextColor
+		push eax
+	
+		mov eax,lightcyan
+		call settextcolor
+
+		call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela (DL = X e DH = Y)
+		mov CurrentLine, 26 
+		; Desenha a msg
+		sub dl, LENGTHOF msgVenceu1
+		shr dl,1
+		mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu4
+		call writestring
+
+		mov dl, Xmargin
+		mov dh, CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu1
+		call writestring
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu2
+		call writestring
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu3
+		call writestring
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu4
+		call writestring
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu5
+		call writestring
+
+		mov dl, Xmargin
+		mov dh,CurrentLine
+		inc CurrentLine
+		call GoToxy
+		mov edx, offset msgVenceu4
+		call writestring
+
+		pop eax
+		call settextcolor
+		
+		call ReadChar
+		mov al, 1
+		call clrscr
+		call ReiniciaVariaveis
+		jmp RETORNA
+	.ENDIF
+
 		call ClearPlayer
 		mov cl, playerXAux
 		mov playerX, cl
 		mov cl, playerYAux
 		mov playerY, cl
-	.ENDIF
 
 	call DrawPlayer ; Desenha o jogador na nova posicao
 Fim:
+	mov ax, 0
+RETORNA:
 	ret
 HandleControl ENDP
 
 ;---------------------------------------------------
 HandleSenha PROC
-;
 ; ?
 ; Recebe: eax = tecla que foi acionada, bl
 ; Retorna: Nada
 ;---------------------------------------------------
-	call VerificaSenha
 	.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
 		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
 		inc bl
@@ -285,7 +570,12 @@ HandleSenha PROC
 		mov playerYAux, cl
 
 		jmp VerificaColisaoLabirinto
-	;.ELSEIF ah = ;Se for a tecla ESC
+	.ELSEIF al == 01bh ; Tecla ESC
+		mov al, 1
+		call clrscr
+		call ReiniciaVariaveis
+		jmp RETORNA
+	.ELSEIF al == 0dh ; Se for tecla Enter nao faca nada
 	.ELSE
 		mov bl, elementoAux
 		mov edx, OFFSET respostaJogador
@@ -299,7 +589,8 @@ HandleSenha PROC
 			mov [edx + 3], al
 		.ENDIF
 		call DrawRespostaJogador
-		jmp Fim ;
+		call VerificaSenha
+		jmp Fim
 	.ENDIF	
 
 VerificaColisaoLabirinto:
@@ -334,6 +625,10 @@ VerificaColisaoLabirinto:
 			mov eax,white + (lightBlue * 16)
 			call settextcolor
 			mov al, '4'
+		.ELSEIF bl == 0bah
+			mov eax,lightgreen + (lightgreen * 16)
+			call settextcolor
+			mov al, '4'
 		.ENDIF
 		call GoToxy
 
@@ -342,7 +637,6 @@ VerificaColisaoLabirinto:
 		pop eax
 		call settextcolor
 
-		;call ClearPlayer
 		mov cl, playerXAux
 		mov playerX, cl
 		mov cl, playerYAux
@@ -351,6 +645,8 @@ VerificaColisaoLabirinto:
 
 	call DrawPlayer ; Desenha o jogador na nova posicao
 Fim:
+	mov al,0
+RETORNA:
 	ret
 HandleSenha ENDP
 
@@ -448,7 +744,6 @@ ClearPlayer ENDP
 
 ;---------------------------------------------------
 LoadMapaFile PROC
-;
 ; Carrega na memoria um mapa
 ; Recebe: ? 
 ; Retorna: ?
@@ -538,8 +833,8 @@ DrawLogo PROC
 	call settextcolor
 
 	mov dl, Xmargin
-	mov dh,CurrentLine
-	inc CurrentLine
+	mov dh,0
+	mov CurrentLine,1
 	call GoToxy
 	mov edx, offset logo1
 	call writestring

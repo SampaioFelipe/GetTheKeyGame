@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/04/17 16:28:58
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/04/17 21:13:39
 getTheKey.asm						     Page 1 - 1
 
 
@@ -25,12 +25,8 @@ getTheKey.asm						     Page 1 - 1
  00000000 00			Xmargin BYTE ? ; Margem da lateral esquerda usada para centralizar o ambiente do jogo
  00000001 00			CurrentLine BYTE 0 ; Auxilia na contagem de linhas ao desenhar o cenario
  00000002 00			CurrentColumn BYTE 0;
- 00000003 0000			minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
-							  ; Formato (Limite X | Limite Y)
- 00000005 0000			maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
-							  ; Formato (Limite X | Limite Y)
 
- 00000007 20 5F 5F 5F 5F	logo1 byte ' ______     ______     ______      ______   __  __     ______        __  __     ______     __  __ ',0dh,0ah,0
+ 00000003 20 5F 5F 5F 5F	logo1 BYTE ' ______     ______     ______      ______   __  __     ______        __  __     ______     __  __ ',0dh,0ah,0
 	   5F 5F 20 20 20
 	   20 20 5F 5F 5F
 	   5F 5F 5F 20 20
@@ -51,7 +47,7 @@ getTheKey.asm						     Page 1 - 1
 	   20 5F 5F 20 20
 	   5F 5F 20 0D 0A
 	   00
- 0000006C 2F 5C 20 20 5F	logo2 byte '/\  ___\   /\  ___\   /\__  _\    /\__  _\ /\ \_\ \   /\  ___\      /\ \/ /    /\  ___\   /\ \_\ \ ',0dh,0ah,0
+ 00000068 2F 5C 20 20 5F	logo2 BYTE '/\  ___\   /\  ___\   /\__  _\    /\__  _\ /\ \_\ \   /\  ___\      /\ \/ /    /\  ___\   /\ \_\ \ ',0dh,0ah,0
 	   5F 5F 5C 20 20
 	   20 2F 5C 20 20
 	   5F 5F 5F 5C 20
@@ -72,7 +68,7 @@ getTheKey.asm						     Page 1 - 1
 	   2F 5C 20 5C 5F
 	   5C 20 5C 20 0D
 	   0A 00
- 000000D2 5C 20 5C 20 5C	logo3 byte '\ \ \__ \  \ \  __\   \/_/\ \/    \/_/\ \/ \ \  __ \  \ \  __\      \ \  _"-.  \ \  __\   \ \____ \',0dh,0ah,0
+ 000000CE 5C 20 5C 20 5C	logo3 BYTE '\ \ \__ \  \ \  __\   \/_/\ \/    \/_/\ \/ \ \  __ \  \ \  __\      \ \  _"-.  \ \  __\   \ \____ \',0dh,0ah,0
 	   5F 5F 20 5C 20
 	   20 5C 20 5C 20
 	   20 5F 5F 5C 20
@@ -93,7 +89,7 @@ getTheKey.asm						     Page 1 - 1
 	   5C 20 5C 5F 5F
 	   5F 5F 20 5C 0D
 	   0A 00
- 00000138 20 5C 20 5C 5F	logo4 byte ' \ \_____\  \ \_____\    \ \_\       \ \_\  \ \_\ \_\  \ \_____\     \ \_\ \_\  \ \_____\  \/\_____\ ',0dh,0ah,0
+ 00000134 20 5C 20 5C 5F	logo4 BYTE ' \ \_____\  \ \_____\    \ \_\       \ \_\  \ \_\ \_\  \ \_____\     \ \_\ \_\  \ \_____\  \/\_____\ ',0dh,0ah,0
 	   5F 5F 5F 5F 5C
 	   20 20 5C 20 5C
 	   5F 5F 5F 5F 5F
@@ -114,7 +110,7 @@ getTheKey.asm						     Page 1 - 1
 	   20 5C 2F 5C 5F
 	   5F 5F 5F 5F 5C
 	   20 0D 0A 00
- 000001A0 20 20 5C 2F 5F	logo5 byte '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/      \/_/\/_/   \/_____/   \/_____/ ',0dh,0ah,0
+ 0000019C 20 20 5C 2F 5F	logo5 BYTE '  \/_____/   \/_____/     \/_/        \/_/   \/_/\/_/   \/_____/      \/_/\/_/   \/_____/   \/_____/ ',0dh,0ah,0
 	   5F 5F 5F 5F 2F
 	   20 20 20 5C 2F
 	   5F 5F 5F 5F 5F
@@ -136,989 +132,1441 @@ getTheKey.asm						     Page 1 - 1
 	   5F 5F 5F 5F 2F
 	   20 0D 0A 00
 
+ 00000204 20 5F 20 20 5F	msgVenceu1 BYTE " _  _ ____ ____ ____    _  _ ____ _  _ ____ ____ _  _ ",0dh,0ah,0
+	   20 5F 5F 5F 5F
+	   20 5F 5F 5F 5F
+	   20 5F 5F 5F 5F
+	   20 20 20 20 5F
+	   20 20 5F 20 5F
+	   5F 5F 5F 20 5F
+	   20 20 5F 20 5F
+	   5F 5F 5F 20 5F
+	   5F 5F 5F 20 5F
+	   20 20 5F 20 0D
+	   0A 00
+ 0000023D 20 7C 20 20 7C	msgVenceu2 BYTE " |  | |  | |    |___    |  | |___ |\ | |    |___ |  | ",0dh,0ah,0
+	   20 7C 20 20 7C
+	   20 7C 20 20 20
+	   20 7C 5F 5F 5F
+	   20 20 20 20 7C
+	   20 20 7C 20 7C
+	   5F 5F 5F 20 7C
+	   5C 20 7C 20 7C
+	   20 20 20 20 7C
+	   5F 5F 5F 20 7C
+	   20 20 7C 20 0D
+	   0A 00
+ 00000276 20 20 5C 2F 20	msgVenceu3 BYTE "  \/  |__| |___ |___     \/  |___ | \| |___ |___ |__| ",0dh,0ah,0
+	   20 7C 5F 5F 7C
+	   20 7C 5F 5F 5F
+	   20 7C 5F 5F 5F
+	   20 20 20 20 20
+	   5C 2F 20 20 7C
+	   5F 5F 5F 20 7C
+	   20 5C 7C 20 7C
+	   5F 5F 5F 20 7C
+	   5F 5F 5F 20 7C
+	   5F 5F 7C 20 0D
+	   0A 00
+ 000002AF 20 20 20 20 20	msgVenceu4 BYTE "                                                      ",0dh,0ah,0
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 20
+	   20 20 20 20 0D
+	   0A 00
+ 000002E8 20 20 20 20 20	msgVenceu5 BYTE "      Pressione qualquer tecla para continuar         ",0dh,0ah,0
+	   20 50 72 65 73
+	   73 69 6F 6E 65
+	   20 71 75 61 6C
+	   71 75 65 72 20
+	   74 65 63 6C 61
+	   20 70 61 72 61
+	   20 63 6F 6E 74
+	   69 6E 75 61 72
+	   20 20 20 20 20
+	   20 20 20 20 0D
+	   0A 00
+
+				; Menu
+ 00000321 4A 4F 47 41 52	jogarString BYTE "JOGAR",0
+	   00
+ 00000327 0000			posJogar WORD ?
+ 00000329 49 4E 53 54 52	instrucoesString BYTE "INSTRUCOES",0
+	   55 43 4F 45 53
+	   00
+ 00000334 0000			posInst WORD ?
+ 00000336 22 4D 61 78 69	msgMenu BYTE '"Maximize a janela antes de iniciar o jogo para uma melhor experiencia."',0
+	   6D 69 7A 65 20
+	   61 20 6A 61 6E
+	   65 6C 61 20 61
+	   6E 74 65 73 20
+	   64 65 20 69 6E
+	   69 63 69 61 72
+	   20 6F 20 6A 6F
+	   67 6F 20 70 61
+	   72 61 20 75 6D
+	   61 20 6D 65 6C
+	   68 6F 72 20 65
+	   78 70 65 72 69
+	   65 6E 63 69 61
+	   2E 22 00
+ 0000037F 00			opcaoSelecionada BYTE 0
+ 00000380 41 71 75 69 20	textoInst BYTE "Aqui vai o texto de instrucao.",0
+	   76 61 69 20 6F
+	   20 74 65 78 74
+	   6F 20 64 65 20
+	   69 6E 73 74 72
+	   75 63 61 6F 2E
+	   00
+ 0000039F 54 65 6D 20 63	textoEsc BYTE "Tem certeza que deseja sair?"
+	   65 72 74 65 7A
+	   61 20 71 75 65
+	   20 64 65 73 65
+	   6A 61 20 73 61
+	   69 72 3F
+ 000003BB 0000			answer WORD ?
+				; Mapa
+ 000003BD 0000			minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
+							  ; Formato (Limite X | Limite Y)
+ 000003BF 0000			maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
+							  ; Formato (Limite X | Limite Y)
+
  = 00000024			mapHeight = 36
  = 00000062			mapWidth = 98 ; LENGHTOF logo1 = 98
 
  = 00000E90			BUFSIZE = mapHeight*mapWidth + 200 ; tamanho do mapa mais o tamanho do enigma+resposta
- 00000208  00000E90 [		BUFFERMAPA BYTE BUFSIZE DUP (?)
+ 000003C1  00000E90 [		BUFFERMAPA BYTE BUFSIZE DUP (?)
 	    00
 	   ]
- 00001098  00000DC8 [		mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
+ 00001251  00000DC8 [		mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
 	    00
 	   ]
- 00001E60 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0
+ 00002019 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0
 	   31 2E 6D 61 70
 	   61 00
- 00001E6C 00			elementoAux BYTE ?
+ 00002025 00			elementoAux BYTE ?
 
 				;Estrutura Player
- 00001E6D FE			playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
- 00001E6E 00			playerX BYTE ? ; Posicao X do jogador na tela
- 00001E6F 00			playerXAux BYTE ?
- 00001E70 00			playerY BYTE ? ; Posicao Y do jogador na tela
- 00001E71 00			playerYAux BYTE ?
- 00001E72  00000004 [		dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (uma solucao e armazenar o offset na matriz)
+ 00002026 FE			playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
+ 00002027 00			playerX BYTE ? ; Posicao X do jogador na tela
+ 00002028 00			playerXAux BYTE ?
+ 00002029 00			playerY BYTE ? ; Posicao Y do jogador na tela
+ 0000202A 00			playerYAux BYTE ?
+ 0000202B  00000004 [		dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (uma solucao e armazenar o offset na matriz)
 	    00
 	   ]
 
 				; Estrutura Enigma
- 00001E76  00000096 [		enigma BYTE 150 DUP (?)
+ 0000202F  00000096 [		enigma BYTE 150 DUP (?)
 	    00
 	   ]
- 00001F0C 20 52 45 53 50	labelResposta BYTE " RESPOSTA: ",0
+ 000020C5 20 52 45 53 50	labelResposta BYTE " RESPOSTA: ",0
 	   4F 53 54 41 3A
 	   20 00
  = 0000004A			OFFSETRESPOSTA = 74
- 00001F18  00000004 [		respostaOriginal BYTE 4 DUP(?)
+ 000020D1  00000004 [		respostaOriginal BYTE 4 DUP(?)
 	    00
 	   ]
-				;respostaJogador BYTE 4 DUP(?)
- 00001F1C 72 65 73 70		respostaJogador BYTE "resp"
- 00001F20 00			statusResposta BYTE 0
- 00001F21 0000			posRespostaJogador WORD ?
+ 000020D5  00000004 [		respostaJogador BYTE 4 DUP(?)
+	    00
+	   ]
+ 000020D9 00			statusResposta BYTE 0
+ 000020DA 0000			posRespostaJogador WORD ?
 
 				; Portas
- 00001F23  00000004 [		posPortas WORD 4 DUP (?)
+ 000020DC  00000004 [		posPortas WORD 4 DUP (?)
 	    0000
 	   ]
 
  00000000			.code
  00000000			main PROC
-
- 00000000			INICIALIZADOR: ; Configuracoes iniciais
- 00000000  E8 00000485			call LoadMapaFile
- 00000005  E8 00000000 E		call ReadChar ; Espera para ajustar a tela, será substituido por outro funçao
-					
-					;Funcao que chamara o menu, se for selecionado "jogar" prossegue, senao vai para intrucoes
-					
+ 00000000  E8 0000087D			call LoadMapaFile
+ 00000005			INICIALIZADOR: ; Configuracoes iniciais
+ 00000005  E8 000000B0			call MenuInicial
  0000000A  E8 00000000 E		call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
  0000000F  80 EA 65			sub dl, LENGTHOF logo1
  00000012  D0 EA			shr dl,1
- 00000014  88 15 00000000 R		mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+ 00000014  88 15 00000000 R		mov Xmargin,dl ; Calcula a margem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
 
- 0000001A  E8 000004EA			call DrawLogo ; Desenha o logo do jogo 
- 0000001F  E8 000005C9			call DrawEnigma ; Desenha o local onde ficara o enigma e o proprio enigma (temos que resolver isso)
- 00000024  E8 00000741			call DrawMapa ; Desenha o mapa do labirinto
- 00000029  A0 00000003 R		mov al, BYTE PTR minMap ; Coloca o jogador em uma posicao predefinida no inicio (mudar essa parte em funcao do mapa)
+ 0000001A  E8 000008E2			call DrawLogo ; Desenha o logo do jogo 
+ 0000001F  E8 000009BE			call DrawEnigma ; Desenha o local onde ficara o enigma e o proprio enigma (temos que resolver isso)
+ 00000024  E8 00000B36			call DrawMapa ; Desenha o mapa do labirinto
+ 00000029  A0 000003BD R		mov al, BYTE PTR minMap ; Coloca o jogador em uma posicao predefinida no inicio (mudar essa parte em funcao do mapa)
  0000002E  FE C0			inc al
- 00000030  A2 00001E6E R		mov playerX, al
- 00000035  A0 00000004 R		mov al, BYTE PTR minMap+1
+ 00000030  A2 00002027 R		mov playerX, al
+ 00000035  A0 000003BE R		mov al, BYTE PTR minMap+1
  0000003A  FE C0			inc al
- 0000003C  A2 00001E70 R		mov playerY, al
- 00000041  E8 000003E0			call DrawPlayer ; Desenha o jogador na tela na posicao configurada
+ 0000003C  A2 00002029 R		mov playerY, al
+ 00000041  E8 000007D8			call DrawPlayer ; Desenha o jogador na tela na posicao configurada
  00000046			MAINLOOP:
  00000046  66| 0F B6 0D			movzx cx, playerY
-	   00001E70 R
+	   00002029 R
  0000004E  66| 51			push cx
  00000050  66| 0F B6 0D			movzx cx, playerX
-	   00001E6E R
+	   00002027 R
  00000058  66| 51			push cx
- 0000005A  E8 00000036			call GetElementoMatriz
+ 0000005A  E8 0000027D			call GetElementoMatriz
 					.IF al == ' '
  0000005F  3C 20	   *	    cmp    al, ' '
- 00000061  75 0E	   *	    jne    @C0001
+ 00000061  75 12	   *	    jne    @C0001
  00000063  E8 00000000 E			call ReadKey ; Le do teclado alguma tecla
- 00000068  74 18				jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
- 0000006A  E8 0000005E				call HandleControl ; Caso contrario e realizada uma acao em funcao da tecla apertada
+ 00000068  74 24				jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+ 0000006A  E8 000002A5				call HandleControl ; Caso contrario e realizada uma acao em funcao da tecla apertada
+ 0000006F  3C 01				cmp al,1
+ 00000071  74 92				jz INICIALIZADOR
 					.ELSE
- 0000006F  EB 11	   *	    jmp    @C0003
- 00000071		   *@C0001:
- 00000071  A2 00001E6C R			mov elementoAux, al ; Coloca em elementoAux o caracter encontrado na posicao onde o jogador esta
- 00000076  E8 00000000 E			call ReadKey ; Le do teclado alguma tecla
- 0000007B  74 05				jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
- 0000007D  E8 0000016F				call HandleSenha
+ 00000073  EB 19	   *	    jmp    @C0003
+ 00000075		   *@C0001:
+ 00000075  A2 00002025 R			mov elementoAux, al ; Coloca em elementoAux o caracter encontrado na posicao onde o jogador esta
+ 0000007A  E8 00000000 E			call ReadKey ; Le do teclado alguma tecla
+ 0000007F  74 0D				jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+ 00000081  E8 0000052B				call HandleSenha
+ 00000086  3C 01				cmp al,1
+ 00000088  0F 84 FFFFFF77			jz INICIALIZADOR
 					.ENDIF
- 00000082		   *@C0003:
- 00000082			FIM:
- 00000082  B8 00000032			mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
+ 0000008E		   *@C0003:
+ 0000008E			FIM:
+ 0000008E  B8 00000032			mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
 								; cause bugs na leitura das teclas
- 00000087  E8 00000000 E		call delay
- 0000008C  EB B8			jmp MAINLOOP ; Executa o loop principal do jogo
+ 00000093  E8 00000000 E		call delay
+ 00000098  EB AC			jmp MAINLOOP ; Executa o loop principal do jogo
 				exit
- 0000008E  6A 00	   *	    push   +000000000h
- 00000090  E8 00000000 E   *	    call   ExitProcess
- 00000095			main ENDP
+ 0000009A  6A 00	   *	    push   +000000000h
+ 0000009C  E8 00000000 E   *	    call   ExitProcess
+ 000000A1			main ENDP
 
 				;---------------------------------------------------
- 00000095			GetElementoMatriz PROC
-				;
+ 000000A1			ReiniciaVariaveis PROC
+				; ?
+				; Recebe: ?
+				; Retorna: ?
+				;---------------------------------------------------
+ 000000A1  BA 000020D5 R		mov edx, OFFSET respostaJogador
+ 000000A6  B3 20			mov bl, ' '
+ 000000A8  B9 00000004			mov ecx, 4
+ 000000AD			L1:
+ 000000AD  88 1A			mov [edx], bl
+ 000000AF  42				inc edx
+ 000000B0  E2 FB			loop L1
+
+ 000000B2  C6 05 000020D9 R		mov statusResposta, 0
+	   00
+
+ 000000B9  C3				ret
+ 000000BA			ReiniciaVariaveis ENDP
+				;---------------------------------------------------
+ 000000BA			MenuInicial PROC
+				; ?
+				; Recebe: ?
+				; Retorna: ?
+				;---------------------------------------------------
+ 000000BA			INICIALIZADOR:
+ 000000BA  C6 05 0000037F R		mov opcaoSelecionada, 0
+	   00
+ 000000C1  E8 00000000 E		call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela (DL = X e DH = Y)
+ 000000C6  66| 52			push dx
+					; Desenha o Logo
+ 000000C8  80 EA 65			sub dl, LENGTHOF logo1
+ 000000CB  D0 EA			shr dl,1
+ 000000CD  88 15 00000000 R		mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+ 000000D3  E8 00000829			call DrawLogo ; Desenha o logo do jogo
+					
+ 000000D8  B0 5F			mov al, '_'
+ 000000DA  B9 00000065			mov ecx, LENGTHOF logo1
+ 000000DF  8A 15 00000000 R		mov dl,Xmargin
+ 000000E5  8A 35 00000001 R		mov dh,CurrentLine
+ 000000EB  FE 05 00000001 R		inc CurrentLine
+ 000000F1  E8 00000000 E		call GoToxy 
+ 000000F6			L1:
+ 000000F6  E8 00000000 E		call WriteChar
+ 000000FB  E2 F9			loop L1
+
+ 000000FD  80 05 00000001 R		add CurrentLine, 1
+	   01
+
+ 00000104  66| 5A			pop dx
+ 00000106  66| 52			push dx
+
+ 00000108  80 EA 49			sub dl, LENGTHOF msgMenu
+ 0000010B  D0 EA			shr dl,1
+ 0000010D  8A 35 00000001 R		mov dh,CurrentLine
+ 00000113  E8 00000000 E		call GoToxy
+ 00000118  BA 00000336 R		mov edx, OFFSET msgMenu
+ 0000011D  E8 00000000 E		call WriteString
+
+ 00000122  80 05 00000001 R		add CurrentLine, 5
+	   05
+
+ 00000129  66| 5A			pop dx
+ 0000012B  66| 52			push dx
+
+ 0000012D  E8 00000000 E		call GetTextColor
+ 00000132  50				push eax
+					; Desenha a opcao Jogar
+ 00000133  80 EA 06			sub dl, LENGTHOF jogarString
+ 00000136  D0 EA			shr dl,1
+ 00000138  8A 35 00000001 R		mov dh,CurrentLine
+ 0000013E  66| 89 15			mov posJogar, dx
+	   00000327 R
+ 00000145  FE CA			dec dl
+ 00000147  E8 00000000 E		call GoToxy
+ 0000014C  B0 3E			mov al, '>'
+ 0000014E  E8 00000000 E		call WriteChar
+ 00000153  B8 000000F0			mov eax,black + (white * 16)
+ 00000158  E8 00000000 E		call settextcolor
+ 0000015D  BA 00000321 R		mov edx, OFFSET JogarString
+ 00000162  E8 00000000 E		call WriteString
+					
+ 00000167  58				pop eax
+ 00000168  E8 00000000 E		call settextcolor
+					
+ 0000016D  B0 3C			mov al, '<'
+ 0000016F  E8 00000000 E		call WriteChar
+					
+ 00000174  80 05 00000001 R		add CurrentLine,2
+	   02
+
+ 0000017B  66| 5A			pop dx
+					; Desenha a opcao Intrucoes
+ 0000017D  80 EA 0B			sub dl, LENGTHOF instrucoesString
+ 00000180  D0 EA			shr dl,1
+ 00000182  8A 35 00000001 R		mov dh,CurrentLine
+ 00000188  66| 89 15			mov posInst, dx
+	   00000334 R
+ 0000018F  E8 00000000 E		call GoToxy
+ 00000194  BA 00000329 R		mov edx, OFFSET instrucoesString
+ 00000199  E8 00000000 E		call WriteString
+					 
+ 0000019E			MAINLOOP:
+ 0000019E  E8 00000000 E		call ReadKey
+ 000001A3  0F 84 0000011F		jz FIM ; Se nao foi apertada nenhuma tecla, pula para o fim da iteracao atual
+					
+					.IF ah == 48h ; Se for seta para cima
+ 000001A9  80 FC 48	   *	    cmp    ah, 048h
+ 000001AC  75 6E	   *	    jne    @C0004
+ 000001AE  C6 05 0000037F R			mov opcaoSelecionada, 0
+	   00
+
+ 000001B5  66| 8B 15				mov dx, posInst
+	   00000334 R
+ 000001BC  FE CA				dec dl
+ 000001BE  E8 00000000 E			call GoToxy
+ 000001C3  B0 20				mov al, ' '
+ 000001C5  E8 00000000 E			call WriteChar
+ 000001CA  BA 00000329 R			mov edx, OFFSET instrucoesString
+ 000001CF  E8 00000000 E			call WriteString
+ 000001D4  B0 20				mov al, ' '
+ 000001D6  E8 00000000 E			call WriteChar
+
+ 000001DB  E8 00000000 E			call GetTextColor
+ 000001E0  50					push eax
+						
+ 000001E1  66| 8B 15				mov dx, posJogar
+	   00000327 R
+ 000001E8  FE CA				dec dl
+ 000001EA  E8 00000000 E			call GoToxy
+ 000001EF  B0 3E				mov al, '>'
+ 000001F1  E8 00000000 E			call WriteChar
+ 000001F6  B8 000000F0				mov eax,black + (white * 16)
+ 000001FB  E8 00000000 E			call settextcolor
+ 00000200  BA 00000321 R			mov edx, OFFSET JogarString
+ 00000205  E8 00000000 E			call WriteString
+						
+ 0000020A  58					pop eax
+ 0000020B  E8 00000000 E			call settextcolor
+
+ 00000210  B0 3C				mov al, '<'
+ 00000212  E8 00000000 E			call WriteChar
+
+					.ELSEIF ah == 50h
+ 00000217  E9 000000AC	   *	    jmp    @C0006
+ 0000021C		   *@C0004:
+ 0000021C  80 FC 50	   *	    cmp    ah, 050h
+ 0000021F  75 6B	   *	    jne    @C0007
+ 00000221  C6 05 0000037F R			mov opcaoSelecionada, 1
+	   01
+
+ 00000228  66| 8B 15				mov dx, posJogar
+	   00000327 R
+ 0000022F  FE CA				dec dl
+ 00000231  E8 00000000 E			call GoToxy
+ 00000236  B0 20				mov al, ' '
+ 00000238  E8 00000000 E			call WriteChar
+ 0000023D  BA 00000321 R			mov edx, OFFSET jogarString
+ 00000242  E8 00000000 E			call WriteString
+ 00000247  B0 20				mov al, ' '
+ 00000249  E8 00000000 E			call WriteChar
+
+ 0000024E  E8 00000000 E			call GetTextColor
+ 00000253  50					push eax
+						
+						
+ 00000254  66| 8B 15				mov dx, posInst
+	   00000334 R
+ 0000025B  FE CA				dec dl
+ 0000025D  E8 00000000 E			call GoToxy
+ 00000262  B0 3E				mov al, '>'
+ 00000264  E8 00000000 E			call WriteChar
+ 00000269  B8 000000F0				mov eax,black + (white * 16)
+ 0000026E  E8 00000000 E			call settextcolor
+ 00000273  BA 00000329 R			mov edx, OFFSET instrucoesString
+ 00000278  E8 00000000 E			call WriteString
+						
+ 0000027D  58					pop eax
+ 0000027E  E8 00000000 E			call settextcolor
+
+ 00000283  B0 3C				mov al, '<'
+ 00000285  E8 00000000 E			call WriteChar
+
+					.ELSEIF al == 0dh
+ 0000028A  EB 3C	   *	    jmp    @C0009
+ 0000028C		   *@C0007:
+ 0000028C  3C 0D	   *	    cmp    al, 00Dh
+ 0000028E  75 38	   *	    jne    @C000A
+ 00000290  A0 0000037F R			mov al, opcaoSelecionada
+						.IF al == 0
+ 00000295  0A C0	   *	    or	al, al
+ 00000297  75 04	   *	    jne    @C000C
+ 00000299  EB 3C					jmp RETORNA
+						.ELSEIF al == 1
+ 0000029B  EB 2B	   *	    jmp    @C000E
+ 0000029D		   *@C000C:
+ 0000029D  3C 01	   *	    cmp    al, 001h
+ 0000029F  75 27	   *	    jne    @C000F
+ 000002A1  E8 00000000 E				call Clrscr
+
+ 000002A6  B6 05					mov dh,5
+ 000002A8  B2 05					mov dl,5
+ 000002AA  E8 00000000 E				call GoToxy
+ 000002AF  BA 00000380 R				mov edx, OFFSET textoInst
+ 000002B4  E8 00000000 E				call WriteString
+							
+ 000002B9  E8 00000000 E				call readChar
+ 000002BE  E8 00000000 E				call Clrscr
+ 000002C3  E9 FFFFFDF2					jmp INICIALIZADOR
+						.ENDIF
+					.ENDIF
+ 000002C8		   *@C000F:
+ 000002C8		   *@C000E:
+ 000002C8		   *@C000A:
+ 000002C8		   *@C0009:
+ 000002C8		   *@C0006:
+ 000002C8			FIM:
+ 000002C8  B8 00000032			mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
+								; cause bugs na leitura das teclas
+ 000002CD  E8 00000000 E		call delay
+ 000002D2  E9 FFFFFEC7			jmp MainLoop
+
+ 000002D7			RETORNA:
+ 000002D7  E8 00000000 E		call Clrscr
+ 000002DC			MenuInicial ENDP
+				;---------------------------------------------------
+ 000002DC			GetElementoMatriz PROC
 				; Mapeia um par ordenado (x,y), passado por parametro, em posicao de memoria da matriz do mapa
 				; e recupera o elemento que armazenado nessa posicao
 				; Recebe: Par ordenado (x,y) por parametro
 				; Retorna: al com o elemento encontrado
 				;---------------------------------------------------
- 00000095  55				push ebp
- 00000096  8B EC			mov ebp,esp
+ 000002DC  55				push ebp
+ 000002DD  8B EC			mov ebp,esp
 
- 00000098  B8 00000000			mov eax, 0
+ 000002DF  B8 00000000			mov eax, 0
 
- 0000009D  66| 8B 45 0A			mov ax, [ebp + 10] ; Y
- 000000A1  66| 8B 5D 08			mov bx, [ebp + 8] ; X
+ 000002E4  66| 8B 45 0A			mov ax, [ebp + 10] ; Y
+ 000002E8  66| 8B 5D 08			mov bx, [ebp + 8] ; X
 
- 000000A5  2A 05 00000004 R		sub al, BYTE PTR minMap+1
- 000000AB  FE C8			dec al
+ 000002EC  2A 05 000003BE R		sub al, BYTE PTR minMap+1
+ 000002F2  FE C8			dec al
 
- 000000AD  2A 1D 00000003 R		sub bl, BYTE PTR minMap
- 000000B3  FE CB			dec bl
+ 000002F4  2A 1D 000003BD R		sub bl, BYTE PTR minMap
+ 000002FA  FE CB			dec bl
 
- 000000B5  B1 62			mov cl, 98
- 000000B7  F6 E1			mul cl ; AX = Y * 98
+ 000002FC  B1 62			mov cl, 98
+ 000002FE  F6 E1			mul cl ; AX = Y * 98
 
- 000000B9  66| 0F B6 CB			movzx cx, bl
- 000000BD  66| 03 C1			add ax, cx
+ 00000300  66| 0F B6 CB			movzx cx, bl
+ 00000304  66| 03 C1			add ax, cx
 
+ 00000307  BE 00001251 R		mov esi, OFFSET mapMatrix
+ 0000030C  03 F0			add esi, eax
+ 0000030E  8A 06			mov al, [esi]
 
- 000000C0  BE 00001098 R		mov esi, OFFSET mapMatrix
- 000000C5  03 F0			add esi, eax
- 000000C7  8A 06			mov al, [esi]
-
- 000000C9  5D				pop ebp
- 000000CA  C2 0004			ret 4
- 000000CD			GetElementoMatriz ENDP
+ 00000310  5D				pop ebp
+ 00000311  C2 0004			ret 4
+ 00000314			GetElementoMatriz ENDP
 
 				;---------------------------------------------------
- 000000CD			HandleControl PROC
+ 00000314			HandleControl PROC
 				; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
 				; Recebe: eax = tecla que foi acionada
 				; Retorna: Nada
 				;---------------------------------------------------
 					.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
- 000000CD  80 FC 48	   *	    cmp    ah, 048h
- 000000D0  75 38	   *	    jne    @C0004
- 000000D2  8A 1D 00000004 R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
- 000000D8  FE C3				inc bl
- 000000DA  38 1D 00001E70 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
- 000000E0  0F 84 0000010A			je Fim
+ 00000314  80 FC 48	   *	    cmp    ah, 048h
+ 00000317  75 38	   *	    jne    @C0011
+ 00000319  8A 1D 000003BE R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
+ 0000031F  FE C3				inc bl
+ 00000321  38 1D 00002029 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+ 00000327  0F 84 0000027F			je Fim
 
- 000000E6  8A 0D 00001E6E R			mov cl, playerX
- 000000EC  88 0D 00001E6F R			mov playerXAux, cl
+ 0000032D  8A 0D 00002027 R			mov cl, playerX
+ 00000333  88 0D 00002028 R			mov playerXAux, cl
 
- 000000F2  8A 0D 00001E70 R			mov cl, playerY
- 000000F8  FE C9				dec cl
- 000000FA  88 0D 00001E71 R			mov playerYAux, cl
+ 00000339  8A 0D 00002029 R			mov cl, playerY
+ 0000033F  FE C9				dec cl
+ 00000341  88 0D 0000202A R			mov playerYAux, cl
 
- 00000100  E9 000000A8				jmp VerificaColisaoLabirinto
+ 00000347  E9 000000CC				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 50h ; Seta para baixo
- 00000105  E9 000000A3	   *	    jmp    @C0006
- 0000010A		   *@C0004:
- 0000010A  80 FC 50	   *	    cmp    ah, 050h
- 0000010D  75 32	   *	    jne    @C0007
- 0000010F  8A 1D 00000006 R			mov bl, BYTE PTR maxMap+1
- 00000115  FE CB				dec bl
- 00000117  38 1D 00001E70 R			cmp playerY, bl
- 0000011D  0F 84 000000CD			je Fim
+ 0000034C  E9 000000C7	   *	    jmp    @C0013
+ 00000351		   *@C0011:
+ 00000351  80 FC 50	   *	    cmp    ah, 050h
+ 00000354  75 38	   *	    jne    @C0014
+ 00000356  8A 1D 000003C0 R			mov bl, BYTE PTR maxMap+1
+ 0000035C  FE CB				dec bl
+ 0000035E  38 1D 00002029 R			cmp playerY, bl
+ 00000364  0F 84 00000242			je Fim
 
- 00000123  8A 0D 00001E6E R			mov cl, playerX
- 00000129  88 0D 00001E6F R			mov playerXAux, cl
+ 0000036A  8A 0D 00002027 R			mov cl, playerX
+ 00000370  88 0D 00002028 R			mov playerXAux, cl
 
- 0000012F  8A 0D 00001E70 R			mov cl, playerY
- 00000135  FE C1				inc cl
- 00000137  88 0D 00001E71 R			mov playerYAux, cl
+ 00000376  8A 0D 00002029 R			mov cl, playerY
+ 0000037C  FE C1				inc cl
+ 0000037E  88 0D 0000202A R			mov playerYAux, cl
 
- 0000013D  EB 6E				jmp VerificaColisaoLabirinto
+ 00000384  E9 0000008F				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 4dh ; Seta para a direita
- 0000013F  EB 6C	   *	    jmp    @C0009
- 00000141		   *@C0007:
- 00000141  80 FC 4D	   *	    cmp    ah, 04Dh
- 00000144  75 32	   *	    jne    @C000A
- 00000146  8A 1D 00000005 R			mov bl, BYTE PTR maxMap
- 0000014C  FE CB				dec bl
- 0000014E  38 1D 00001E6E R			cmp playerX, bl
- 00000154  0F 84 00000096			je Fim
+ 00000389  E9 0000008A	   *	    jmp    @C0016
+ 0000038E		   *@C0014:
+ 0000038E  80 FC 4D	   *	    cmp    ah, 04Dh
+ 00000391  75 32	   *	    jne    @C0017
+ 00000393  8A 1D 000003BF R			mov bl, BYTE PTR maxMap
+ 00000399  FE CB				dec bl
+ 0000039B  38 1D 00002027 R			cmp playerX, bl
+ 000003A1  0F 84 00000205			je Fim
 
- 0000015A  8A 0D 00001E6E R			mov cl, playerX
- 00000160  FE C1				inc cl
- 00000162  88 0D 00001E6F R			mov playerXAux, cl
+ 000003A7  8A 0D 00002027 R			mov cl, playerX
+ 000003AD  FE C1				inc cl
+ 000003AF  88 0D 00002028 R			mov playerXAux, cl
 
- 00000168  8A 0D 00001E70 R			mov cl, playerY
- 0000016E  88 0D 00001E71 R			mov playerYAux, cl
+ 000003B5  8A 0D 00002029 R			mov cl, playerY
+ 000003BB  88 0D 0000202A R			mov playerYAux, cl
 
- 00000174  EB 37				jmp VerificaColisaoLabirinto
+ 000003C1  EB 55				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 4bh ; Seta para a esquerda
- 00000176  EB 35	   *	    jmp    @C000C
- 00000178		   *@C000A:
- 00000178  80 FC 4B	   *	    cmp    ah, 04Bh
- 0000017B  75 2E	   *	    jne    @C000D
- 0000017D  8A 1D 00000003 R			mov bl, BYTE PTR minMap
- 00000183  FE C3				inc bl
- 00000185  38 1D 00001E6E R			cmp playerX, bl
- 0000018B  74 63				je Fim
+ 000003C3  EB 53	   *	    jmp    @C0019
+ 000003C5		   *@C0017:
+ 000003C5  80 FC 4B	   *	    cmp    ah, 04Bh
+ 000003C8  75 32	   *	    jne    @C001A
+ 000003CA  8A 1D 000003BD R			mov bl, BYTE PTR minMap
+ 000003D0  FE C3				inc bl
+ 000003D2  38 1D 00002027 R			cmp playerX, bl
+ 000003D8  0F 84 000001CE			je Fim
 
- 0000018D  8A 0D 00001E6E R			mov cl, playerX
- 00000193  FE C9				dec cl
- 00000195  88 0D 00001E6F R			mov playerXAux, cl
+ 000003DE  8A 0D 00002027 R			mov cl, playerX
+ 000003E4  FE C9				dec cl
+ 000003E6  88 0D 00002028 R			mov playerXAux, cl
 
- 0000019B  8A 0D 00001E70 R			mov cl, playerY
- 000001A1  88 0D 00001E71 R			mov playerYAux, cl
+ 000003EC  8A 0D 00002029 R			mov cl, playerY
+ 000003F2  88 0D 0000202A R			mov playerYAux, cl
 
- 000001A7  EB 04				jmp VerificaColisaoLabirinto
-					;.ELSEIF ah = ;Se for a tecla ESC
+ 000003F8  EB 1E				jmp VerificaColisaoLabirinto
+					.ELSEIF al == 01bh ; Tecla ESC
+ 000003FA  EB 1C	   *	    jmp    @C001C
+ 000003FC		   *@C001A:
+ 000003FC  3C 1B	   *	    cmp    al, 01Bh
+ 000003FE  75 13	   *	    jne    @C001D
+ 00000400  B0 01				mov al, 1
+ 00000402  E8 00000000 E			call clrscr
+ 00000407  E8 FFFFFC95				call ReiniciaVariaveis
+ 0000040C  E9 0000019F				jmp RETORNA
 					.ELSE
- 000001A9  EB 02	   *	    jmp    @C000F
- 000001AB		   *@C000D:
- 000001AB  EB 43				jmp Fim ;
+ 00000411  EB 05	   *	    jmp    @C001F
+ 00000413		   *@C001D:
+ 00000413  E9 00000194				jmp Fim ;
 					.ENDIF	
- 000001AD		   *@C000F:
- 000001AD		   *@C000C:
- 000001AD		   *@C0009:
- 000001AD		   *@C0006:
+ 00000418		   *@C001F:
+ 00000418		   *@C001C:
+ 00000418		   *@C0019:
+ 00000418		   *@C0016:
+ 00000418		   *@C0013:
 
- 000001AD			VerificaColisaoLabirinto:
+ 00000418			VerificaColisaoLabirinto:
 					; Verifica se há colisão com os elementos da matriz
- 000001AD  66| 0F B6 0D			movzx cx, playerYAux
-	   00001E71 R
- 000001B5  66| 51			push cx
- 000001B7  66| 0F B6 0D			movzx cx, playerXAux
-	   00001E6F R
- 000001BF  66| 51			push cx
- 000001C1  E8 FFFFFECF			call GetElementoMatriz
+ 00000418  66| 0F B6 0D			movzx cx, playerYAux
+	   0000202A R
+ 00000420  66| 51			push cx
+ 00000422  66| 0F B6 0D			movzx cx, playerXAux
+	   00002028 R
+ 0000042A  66| 51			push cx
+ 0000042C  E8 FFFFFEAB			call GetElementoMatriz
 
 					.IF al == 0dbh
- 000001C6  3C DB	   *	    cmp    al, 0DBh
- 000001C8  75 04	   *	    jne    @C0010
- 000001CA  EB 24				jmp fim
-					;Aqui eu posso colocar uma verificação do para ver se a senha já está correta, se não estiver bloqueia o movimento da porta também.
-					.Else
- 000001CC  EB 1D	   *	    jmp    @C0012
- 000001CE		   *@C0010:
- 000001CE  E8 00000285				call ClearPlayer
- 000001D3  8A 0D 00001E6F R			mov cl, playerXAux
- 000001D9  88 0D 00001E6E R			mov playerX, cl
- 000001DF  8A 0D 00001E71 R			mov cl, playerYAux
- 000001E5  88 0D 00001E70 R			mov playerY, cl
-					.ENDIF
- 000001EB		   *@C0012:
+ 00000431  3C DB	   *	    cmp    al, 0DBh
+ 00000433  75 0A	   *	    jne    @C0020
+ 00000435  E9 00000172				jmp fim
+					.ELSEIF al == 0bah
+ 0000043A  E9 0000014B	   *	    jmp    @C0022
+ 0000043F		   *@C0020:
+ 0000043F  3C BA	   *	    cmp    al, 0BAh
+ 00000441  75 18	   *	    jne    @C0023
+ 00000443  8A 1D 000020D9 R			mov bl, statusResposta
+						.IF bl == 0
+ 00000449  0A DB	   *	    or	bl, bl
+ 0000044B  0F 85 00000139  *	    jne    @C0025
+ 00000451  E9 00000156					jmp fim
+						.ENDIF
+					.ELSEIF al == 0feh ; Encontrou a chave e venceu
+ 00000456  E9 0000012F	   *	    jmp    @C0027
+ 0000045B		   *@C0023:
+ 0000045B  3C FE	   *	    cmp    al, 0FEh
+ 0000045D  0F 85 00000127  *	    jne    @C0028
+						;call clrscr
+ 00000463  E8 00000000 E			call GetTextColor
+ 00000468  50					push eax
+					
+ 00000469  B8 0000000B				mov eax,lightcyan
+ 0000046E  E8 00000000 E			call settextcolor
 
- 000001EB  E8 00000236			call DrawPlayer ; Desenha o jogador na nova posicao
- 000001F0			Fim:
- 000001F0  C3				ret
- 000001F1			HandleControl ENDP
+ 00000473  E8 00000000 E			call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela (DL = X e DH = Y)
+ 00000478  C6 05 00000001 R			mov CurrentLine, 26 
+	   1A
+						; Desenha a msg
+ 0000047F  80 EA 39				sub dl, LENGTHOF msgVenceu1
+ 00000482  D0 EA				shr dl,1
+ 00000484  88 15 00000000 R			mov Xmargin,dl ; Calcula a magem esquerda em funcao do tamanho da tela e do logo, dessa forma o jogo sempre estará centralizado
+
+ 0000048A  8A 15 00000000 R			mov dl, Xmargin
+ 00000490  8A 35 00000001 R			mov dh,CurrentLine
+ 00000496  FE 05 00000001 R			inc CurrentLine
+ 0000049C  E8 00000000 E			call GoToxy
+ 000004A1  BA 000002AF R			mov edx, offset msgVenceu4
+ 000004A6  E8 00000000 E			call writestring
+
+ 000004AB  8A 15 00000000 R			mov dl, Xmargin
+ 000004B1  8A 35 00000001 R			mov dh, CurrentLine
+ 000004B7  FE 05 00000001 R			inc CurrentLine
+ 000004BD  E8 00000000 E			call GoToxy
+ 000004C2  BA 00000204 R			mov edx, offset msgVenceu1
+ 000004C7  E8 00000000 E			call writestring
+
+ 000004CC  8A 15 00000000 R			mov dl, Xmargin
+ 000004D2  8A 35 00000001 R			mov dh,CurrentLine
+ 000004D8  FE 05 00000001 R			inc CurrentLine
+ 000004DE  E8 00000000 E			call GoToxy
+ 000004E3  BA 0000023D R			mov edx, offset msgVenceu2
+ 000004E8  E8 00000000 E			call writestring
+
+ 000004ED  8A 15 00000000 R			mov dl, Xmargin
+ 000004F3  8A 35 00000001 R			mov dh,CurrentLine
+ 000004F9  FE 05 00000001 R			inc CurrentLine
+ 000004FF  E8 00000000 E			call GoToxy
+ 00000504  BA 00000276 R			mov edx, offset msgVenceu3
+ 00000509  E8 00000000 E			call writestring
+
+ 0000050E  8A 15 00000000 R			mov dl, Xmargin
+ 00000514  8A 35 00000001 R			mov dh,CurrentLine
+ 0000051A  FE 05 00000001 R			inc CurrentLine
+ 00000520  E8 00000000 E			call GoToxy
+ 00000525  BA 000002AF R			mov edx, offset msgVenceu4
+ 0000052A  E8 00000000 E			call writestring
+
+ 0000052F  8A 15 00000000 R			mov dl, Xmargin
+ 00000535  8A 35 00000001 R			mov dh,CurrentLine
+ 0000053B  FE 05 00000001 R			inc CurrentLine
+ 00000541  E8 00000000 E			call GoToxy
+ 00000546  BA 000002E8 R			mov edx, offset msgVenceu5
+ 0000054B  E8 00000000 E			call writestring
+
+ 00000550  8A 15 00000000 R			mov dl, Xmargin
+ 00000556  8A 35 00000001 R			mov dh,CurrentLine
+ 0000055C  FE 05 00000001 R			inc CurrentLine
+ 00000562  E8 00000000 E			call GoToxy
+ 00000567  BA 000002AF R			mov edx, offset msgVenceu4
+ 0000056C  E8 00000000 E			call writestring
+
+ 00000571  58					pop eax
+ 00000572  E8 00000000 E			call settextcolor
+						
+ 00000577  E8 00000000 E			call ReadChar
+ 0000057C  B0 01				mov al, 1
+ 0000057E  E8 00000000 E			call clrscr
+ 00000583  E8 FFFFFB19				call ReiniciaVariaveis
+ 00000588  EB 26				jmp RETORNA
+					.ENDIF
+ 0000058A		   *@C0028:
+ 0000058A		   *@C0027:
+ 0000058A		   *@C0022:
+ 0000058A		   *@C0025:
+
+ 0000058A  E8 000002C1				call ClearPlayer
+ 0000058F  8A 0D 00002028 R			mov cl, playerXAux
+ 00000595  88 0D 00002027 R			mov playerX, cl
+ 0000059B  8A 0D 0000202A R			mov cl, playerYAux
+ 000005A1  88 0D 00002029 R			mov playerY, cl
+
+ 000005A7  E8 00000272			call DrawPlayer ; Desenha o jogador na nova posicao
+ 000005AC			Fim:
+ 000005AC  66| B8 0000			mov ax, 0
+ 000005B0			RETORNA:
+ 000005B0  C3				ret
+ 000005B1			HandleControl ENDP
 
 				;---------------------------------------------------
- 000001F1			HandleSenha PROC
-				;
+ 000005B1			HandleSenha PROC
 				; ?
 				; Recebe: eax = tecla que foi acionada, bl
 				; Retorna: Nada
 				;---------------------------------------------------
- 000001F1  E8 000001D9			call VerificaSenha
 					.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
- 000001F6  80 FC 48	   *	    cmp    ah, 048h
- 000001F9  75 38	   *	    jne    @C0013
- 000001FB  8A 1D 00000004 R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
- 00000201  FE C3				inc bl
- 00000203  38 1D 00001E70 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
- 00000209  0F 84 000001BF			je Fim
+ 000005B1  80 FC 48	   *	    cmp    ah, 048h
+ 000005B4  75 38	   *	    jne    @C002A
+ 000005B6  8A 1D 000003BE R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
+ 000005BC  FE C3				inc bl
+ 000005BE  38 1D 00002029 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+ 000005C4  0F 84 000001FA			je Fim
 
- 0000020F  8A 0D 00001E6E R			mov cl, playerX
- 00000215  88 0D 00001E6F R			mov playerXAux, cl
+ 000005CA  8A 0D 00002027 R			mov cl, playerX
+ 000005D0  88 0D 00002028 R			mov playerXAux, cl
 
- 0000021B  8A 0D 00001E70 R			mov cl, playerY
- 00000221  FE C9				dec cl
- 00000223  88 0D 00001E71 R			mov playerYAux, cl
+ 000005D6  8A 0D 00002029 R			mov cl, playerY
+ 000005DC  FE C9				dec cl
+ 000005DE  88 0D 0000202A R			mov playerYAux, cl
 
- 00000229  E9 000000EA				jmp VerificaColisaoLabirinto
+ 000005E4  E9 00000112				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 50h ; Seta para baixo
- 0000022E  E9 000000E5	   *	    jmp    @C0015
- 00000233		   *@C0013:
- 00000233  80 FC 50	   *	    cmp    ah, 050h
- 00000236  75 38	   *	    jne    @C0016
- 00000238  8A 1D 00000006 R			mov bl, BYTE PTR maxMap+1
- 0000023E  FE CB				dec bl
- 00000240  38 1D 00001E70 R			cmp playerY, bl
- 00000246  0F 84 00000182			je Fim
+ 000005E9  E9 0000010D	   *	    jmp    @C002C
+ 000005EE		   *@C002A:
+ 000005EE  80 FC 50	   *	    cmp    ah, 050h
+ 000005F1  75 38	   *	    jne    @C002D
+ 000005F3  8A 1D 000003C0 R			mov bl, BYTE PTR maxMap+1
+ 000005F9  FE CB				dec bl
+ 000005FB  38 1D 00002029 R			cmp playerY, bl
+ 00000601  0F 84 000001BD			je Fim
 
- 0000024C  8A 0D 00001E6E R			mov cl, playerX
- 00000252  88 0D 00001E6F R			mov playerXAux, cl
+ 00000607  8A 0D 00002027 R			mov cl, playerX
+ 0000060D  88 0D 00002028 R			mov playerXAux, cl
 
- 00000258  8A 0D 00001E70 R			mov cl, playerY
- 0000025E  FE C1				inc cl
- 00000260  88 0D 00001E71 R			mov playerYAux, cl
+ 00000613  8A 0D 00002029 R			mov cl, playerY
+ 00000619  FE C1				inc cl
+ 0000061B  88 0D 0000202A R			mov playerYAux, cl
 
- 00000266  E9 000000AD				jmp VerificaColisaoLabirinto
+ 00000621  E9 000000D5				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 4dh ; Seta para a direita
- 0000026B  E9 000000A8	   *	    jmp    @C0018
- 00000270		   *@C0016:
- 00000270  80 FC 4D	   *	    cmp    ah, 04Dh
- 00000273  75 32	   *	    jne    @C0019
- 00000275  8A 1D 00000005 R			mov bl, BYTE PTR maxMap
- 0000027B  FE CB				dec bl
- 0000027D  38 1D 00001E6E R			cmp playerX, bl
- 00000283  0F 84 00000145			je Fim
+ 00000626  E9 000000D0	   *	    jmp    @C002F
+ 0000062B		   *@C002D:
+ 0000062B  80 FC 4D	   *	    cmp    ah, 04Dh
+ 0000062E  75 38	   *	    jne    @C0030
+ 00000630  8A 1D 000003BF R			mov bl, BYTE PTR maxMap
+ 00000636  FE CB				dec bl
+ 00000638  38 1D 00002027 R			cmp playerX, bl
+ 0000063E  0F 84 00000180			je Fim
 
- 00000289  8A 0D 00001E6E R			mov cl, playerX
- 0000028F  FE C1				inc cl
- 00000291  88 0D 00001E6F R			mov playerXAux, cl
+ 00000644  8A 0D 00002027 R			mov cl, playerX
+ 0000064A  FE C1				inc cl
+ 0000064C  88 0D 00002028 R			mov playerXAux, cl
 
- 00000297  8A 0D 00001E70 R			mov cl, playerY
- 0000029D  88 0D 00001E71 R			mov playerYAux, cl
+ 00000652  8A 0D 00002029 R			mov cl, playerY
+ 00000658  88 0D 0000202A R			mov playerYAux, cl
 
- 000002A3  EB 73				jmp VerificaColisaoLabirinto
+ 0000065E  E9 00000098				jmp VerificaColisaoLabirinto
 					.ELSEIF ah == 4bh ; Seta para a esquerda
- 000002A5  EB 71	   *	    jmp    @C001B
- 000002A7		   *@C0019:
- 000002A7  80 FC 4B	   *	    cmp    ah, 04Bh
- 000002AA  75 32	   *	    jne    @C001C
- 000002AC  8A 1D 00000003 R			mov bl, BYTE PTR minMap
- 000002B2  FE C3				inc bl
- 000002B4  38 1D 00001E6E R			cmp playerX, bl
- 000002BA  0F 84 0000010E			je Fim
+ 00000663  E9 00000093	   *	    jmp    @C0032
+ 00000668		   *@C0030:
+ 00000668  80 FC 4B	   *	    cmp    ah, 04Bh
+ 0000066B  75 32	   *	    jne    @C0033
+ 0000066D  8A 1D 000003BD R			mov bl, BYTE PTR minMap
+ 00000673  FE C3				inc bl
+ 00000675  38 1D 00002027 R			cmp playerX, bl
+ 0000067B  0F 84 00000143			je Fim
 
- 000002C0  8A 0D 00001E6E R			mov cl, playerX
- 000002C6  FE C9				dec cl
- 000002C8  88 0D 00001E6F R			mov playerXAux, cl
+ 00000681  8A 0D 00002027 R			mov cl, playerX
+ 00000687  FE C9				dec cl
+ 00000689  88 0D 00002028 R			mov playerXAux, cl
 
- 000002CE  8A 0D 00001E70 R			mov cl, playerY
- 000002D4  88 0D 00001E71 R			mov playerYAux, cl
+ 0000068F  8A 0D 00002029 R			mov cl, playerY
+ 00000695  88 0D 0000202A R			mov playerYAux, cl
 
- 000002DA  EB 3C				jmp VerificaColisaoLabirinto
-					;.ELSEIF ah = ;Se for a tecla ESC
+ 0000069B  EB 5E				jmp VerificaColisaoLabirinto
+					.ELSEIF al == 01bh ; Tecla ESC
+ 0000069D  EB 5C	   *	    jmp    @C0035
+ 0000069F		   *@C0033:
+ 0000069F  3C 1B	   *	    cmp    al, 01Bh
+ 000006A1  75 13	   *	    jne    @C0036
+ 000006A3  B0 01				mov al, 1
+ 000006A5  E8 00000000 E			call clrscr
+ 000006AA  E8 FFFFF9F2				call ReiniciaVariaveis
+ 000006AF  E9 00000112				jmp RETORNA
+					.ELSEIF al == 0dh ; Se for tecla Enter nao faca nada
+ 000006B4  EB 45	   *	    jmp    @C0038
+ 000006B6		   *@C0036:
+ 000006B6  3C 0D	   *	    cmp    al, 00Dh
+ 000006B8  75 02	   *	    jne    @C0039
 					.ELSE
- 000002DC  EB 3A	   *	    jmp    @C001E
- 000002DE		   *@C001C:
- 000002DE  8A 1D 00001E6C R			mov bl, elementoAux
- 000002E4  BA 00001F1C R			mov edx, OFFSET respostaJogador
+ 000006BA  EB 3F	   *	    jmp    @C003B
+ 000006BC		   *@C0039:
+ 000006BC  8A 1D 00002025 R			mov bl, elementoAux
+ 000006C2  BA 000020D5 R			mov edx, OFFSET respostaJogador
 						.IF bl == '1'
- 000002E9  80 FB 31	   *	    cmp    bl, '1'
- 000002EC  75 04	   *	    jne    @C001F
- 000002EE  88 02					mov [edx], al
+ 000006C7  80 FB 31	   *	    cmp    bl, '1'
+ 000006CA  75 04	   *	    jne    @C003C
+ 000006CC  88 02					mov [edx], al
 						.ELSEIF bl == '2'
- 000002F0  EB 1C	   *	    jmp    @C0021
- 000002F2		   *@C001F:
- 000002F2  80 FB 32	   *	    cmp    bl, '2'
- 000002F5  75 05	   *	    jne    @C0022
- 000002F7  88 42 01					mov [edx + 1], al
+ 000006CE  EB 1C	   *	    jmp    @C003E
+ 000006D0		   *@C003C:
+ 000006D0  80 FB 32	   *	    cmp    bl, '2'
+ 000006D3  75 05	   *	    jne    @C003F
+ 000006D5  88 42 01					mov [edx + 1], al
 						.ELSEIF bl == '3'
- 000002FA  EB 12	   *	    jmp    @C0024
- 000002FC		   *@C0022:
- 000002FC  80 FB 33	   *	    cmp    bl, '3'
- 000002FF  75 05	   *	    jne    @C0025
- 00000301  88 42 02					mov [edx + 2], al
+ 000006D8  EB 12	   *	    jmp    @C0041
+ 000006DA		   *@C003F:
+ 000006DA  80 FB 33	   *	    cmp    bl, '3'
+ 000006DD  75 05	   *	    jne    @C0042
+ 000006DF  88 42 02					mov [edx + 2], al
 						.ELSEIF bl == '4'
- 00000304  EB 08	   *	    jmp    @C0027
- 00000306		   *@C0025:
- 00000306  80 FB 34	   *	    cmp    bl, '4'
- 00000309  75 03	   *	    jne    @C0028
- 0000030B  88 42 03					mov [edx + 3], al
+ 000006E2  EB 08	   *	    jmp    @C0044
+ 000006E4		   *@C0042:
+ 000006E4  80 FB 34	   *	    cmp    bl, '4'
+ 000006E7  75 03	   *	    jne    @C0045
+ 000006E9  88 42 03					mov [edx + 3], al
 						.ENDIF
- 0000030E		   *@C0028:
- 0000030E		   *@C0027:
- 0000030E		   *@C0024:
- 0000030E		   *@C0021:
- 0000030E  E8 000003BA				call DrawRespostaJogador
- 00000313  E9 000000B6				jmp Fim ;
+ 000006EC		   *@C0045:
+ 000006EC		   *@C0044:
+ 000006EC		   *@C0041:
+ 000006EC		   *@C003E:
+ 000006EC  E8 000003D1				call DrawRespostaJogador
+ 000006F1  E8 000000D1				call VerificaSenha
+ 000006F6  E9 000000C9				jmp Fim
 					.ENDIF	
- 00000318		   *@C001E:
- 00000318		   *@C001B:
- 00000318		   *@C0018:
- 00000318		   *@C0015:
+ 000006FB		   *@C003B:
+ 000006FB		   *@C0038:
+ 000006FB		   *@C0035:
+ 000006FB		   *@C0032:
+ 000006FB		   *@C002F:
+ 000006FB		   *@C002C:
 
- 00000318			VerificaColisaoLabirinto:
+ 000006FB			VerificaColisaoLabirinto:
 					; Verifica se há colisão com os elementos da matriz
- 00000318  66| 0F B6 0D			movzx cx, playerYAux
-	   00001E71 R
- 00000320  66| 51			push cx
- 00000322  66| 0F B6 0D			movzx cx, playerXAux
-	   00001E6F R
- 0000032A  66| 51			push cx
- 0000032C  E8 FFFFFD64			call GetElementoMatriz
+ 000006FB  66| 0F B6 0D			movzx cx, playerYAux
+	   0000202A R
+ 00000703  66| 51			push cx
+ 00000705  66| 0F B6 0D			movzx cx, playerXAux
+	   00002028 R
+ 0000070D  66| 51			push cx
+ 0000070F  E8 FFFFFBC8			call GetElementoMatriz
 
 					.IF al == 0dbh
- 00000331  3C DB	   *	    cmp    al, 0DBh
- 00000333  75 0A	   *	    jne    @C002A
- 00000335  E9 00000094				jmp fim
+ 00000714  3C DB	   *	    cmp    al, 0DBh
+ 00000716  75 0A	   *	    jne    @C0047
+ 00000718  E9 000000A7				jmp fim
 					.Else
- 0000033A  E9 0000008A	   *	    jmp    @C002C
- 0000033F		   *@C002A:
- 0000033F  8A 15 00001E6E R			mov dl, playerX
- 00000345  8A 35 00001E70 R			mov dh, playerY
- 0000034B  8A 1D 00001E6C R			mov bl, elementoAux
- 00000351  E8 00000000 E			call GetTextColor
- 00000356  50					push eax
+ 0000071D  E9 0000009D	   *	    jmp    @C0049
+ 00000722		   *@C0047:
+ 00000722  8A 15 00002027 R			mov dl, playerX
+ 00000728  8A 35 00002029 R			mov dh, playerY
+ 0000072E  8A 1D 00002025 R			mov bl, elementoAux
+ 00000734  E8 00000000 E			call GetTextColor
+ 00000739  50					push eax
 						.IF bl == '1'
- 00000357  80 FB 31	   *	    cmp    bl, '1'
- 0000035A  75 0E	   *	    jne    @C002D
- 0000035C  B8 0000002F					mov eax,white + (green * 16)
- 00000361  E8 00000000 E				call settextcolor
- 00000366  B0 31					mov al, '1'
+ 0000073A  80 FB 31	   *	    cmp    bl, '1'
+ 0000073D  75 0E	   *	    jne    @C004A
+ 0000073F  B8 0000002F					mov eax,white + (green * 16)
+ 00000744  E8 00000000 E				call settextcolor
+ 00000749  B0 31					mov al, '1'
 						.ELSEIF bl == '2'
- 00000368  EB 37	   *	    jmp    @C002F
- 0000036A		   *@C002D:
- 0000036A  80 FB 32	   *	    cmp    bl, '2'
- 0000036D  75 0E	   *	    jne    @C0030
- 0000036F  B8 000000D0					mov eax,black + (lightmagenta * 16)
- 00000374  E8 00000000 E				call settextcolor
- 00000379  B0 32					mov al, '2'
+ 0000074B  EB 4A	   *	    jmp    @C004C
+ 0000074D		   *@C004A:
+ 0000074D  80 FB 32	   *	    cmp    bl, '2'
+ 00000750  75 0E	   *	    jne    @C004D
+ 00000752  B8 000000D0					mov eax,black + (lightmagenta * 16)
+ 00000757  E8 00000000 E				call settextcolor
+ 0000075C  B0 32					mov al, '2'
 						.ELSEIF bl == '3'
- 0000037B  EB 24	   *	    jmp    @C0032
- 0000037D		   *@C0030:
- 0000037D  80 FB 33	   *	    cmp    bl, '3'
- 00000380  75 0E	   *	    jne    @C0033
- 00000382  B8 000000E0					mov eax,black + (yellow * 16)
- 00000387  E8 00000000 E				call settextcolor
- 0000038C  B0 33					mov al, '3'
+ 0000075E  EB 37	   *	    jmp    @C004F
+ 00000760		   *@C004D:
+ 00000760  80 FB 33	   *	    cmp    bl, '3'
+ 00000763  75 0E	   *	    jne    @C0050
+ 00000765  B8 000000E0					mov eax,black + (yellow * 16)
+ 0000076A  E8 00000000 E				call settextcolor
+ 0000076F  B0 33					mov al, '3'
 						.ELSEIF bl == '4'
- 0000038E  EB 11	   *	    jmp    @C0035
- 00000390		   *@C0033:
- 00000390  80 FB 34	   *	    cmp    bl, '4'
- 00000393  75 0C	   *	    jne    @C0036
- 00000395  B8 0000009F					mov eax,white + (lightBlue * 16)
- 0000039A  E8 00000000 E				call settextcolor
- 0000039F  B0 34					mov al, '4'
+ 00000771  EB 24	   *	    jmp    @C0052
+ 00000773		   *@C0050:
+ 00000773  80 FB 34	   *	    cmp    bl, '4'
+ 00000776  75 0E	   *	    jne    @C0053
+ 00000778  B8 0000009F					mov eax,white + (lightBlue * 16)
+ 0000077D  E8 00000000 E				call settextcolor
+ 00000782  B0 34					mov al, '4'
+						.ELSEIF bl == 0bah
+ 00000784  EB 11	   *	    jmp    @C0055
+ 00000786		   *@C0053:
+ 00000786  80 FB BA	   *	    cmp    bl, 0BAh
+ 00000789  75 0C	   *	    jne    @C0056
+ 0000078B  B8 000000AA					mov eax,lightgreen + (lightgreen * 16)
+ 00000790  E8 00000000 E				call settextcolor
+ 00000795  B0 34					mov al, '4'
 						.ENDIF
- 000003A1		   *@C0036:
- 000003A1		   *@C0035:
- 000003A1		   *@C0032:
- 000003A1		   *@C002F:
- 000003A1  E8 00000000 E			call GoToxy
+ 00000797		   *@C0056:
+ 00000797		   *@C0055:
+ 00000797		   *@C0052:
+ 00000797		   *@C004F:
+ 00000797		   *@C004C:
+ 00000797  E8 00000000 E			call GoToxy
 
- 000003A6  E8 00000000 E			call WriteChar
+ 0000079C  E8 00000000 E			call WriteChar
 						
- 000003AB  58					pop eax
- 000003AC  E8 00000000 E			call settextcolor
+ 000007A1  58					pop eax
+ 000007A2  E8 00000000 E			call settextcolor
 
-						;call ClearPlayer
- 000003B1  8A 0D 00001E6F R			mov cl, playerXAux
- 000003B7  88 0D 00001E6E R			mov playerX, cl
- 000003BD  8A 0D 00001E71 R			mov cl, playerYAux
- 000003C3  88 0D 00001E70 R			mov playerY, cl
+ 000007A7  8A 0D 00002028 R			mov cl, playerXAux
+ 000007AD  88 0D 00002027 R			mov playerX, cl
+ 000007B3  8A 0D 0000202A R			mov cl, playerYAux
+ 000007B9  88 0D 00002029 R			mov playerY, cl
 					.ENDIF
- 000003C9		   *@C002C:
+ 000007BF		   *@C0049:
 
- 000003C9  E8 00000058			call DrawPlayer ; Desenha o jogador na nova posicao
- 000003CE			Fim:
- 000003CE  C3				ret
- 000003CF			HandleSenha ENDP
+ 000007BF  E8 0000005A			call DrawPlayer ; Desenha o jogador na nova posicao
+ 000007C4			Fim:
+ 000007C4  B0 00			mov al,0
+ 000007C6			RETORNA:
+ 000007C6  C3				ret
+ 000007C7			HandleSenha ENDP
 
 				;---------------------------------------------------
- 000003CF			VerificaSenha PROC
+ 000007C7			VerificaSenha PROC
 				; ?
 				; Recebe: Nada
 				; Retorna: Nada
 				;---------------------------------------------------
- 000003CF  BE 00001F18 R		mov esi, OFFSET respostaOriginal
- 000003D4  BA 00001F1C R		mov edx, OFFSET respostaJogador
- 000003D9  B9 00000004			mov ecx, 4
- 000003DE			Verifica:
- 000003DE  8A 06			mov al, [esi]
- 000003E0  8A 1A			mov bl, [edx]
- 000003E2  3A C3			cmp al,bl
- 000003E4  75 3F			jnz Diferente
+ 000007C7  BE 000020D1 R		mov esi, OFFSET respostaOriginal
+ 000007CC  BA 000020D5 R		mov edx, OFFSET respostaJogador
+ 000007D1  B9 00000004			mov ecx, 4
+ 000007D6			Verifica:
+ 000007D6  8A 06			mov al, [esi]
+ 000007D8  8A 1A			mov bl, [edx]
+ 000007DA  3A C3			cmp al,bl
+ 000007DC  75 3F			jnz Diferente
 
- 000003E6  46				inc esi
- 000003E7  42				inc edx
- 000003E8  E2 F4			loop Verifica
+ 000007DE  46				inc esi
+ 000007DF  42				inc edx
+ 000007E0  E2 F4			loop Verifica
 
- 000003EA  E8 00000000 E		call GetTextColor
- 000003EF  50			    push eax
- 000003F0  B8 000000AA			mov eax,lightgreen + (lightgreen * 16)
- 000003F5  E8 00000000 E		call settextcolor
+ 000007E2  E8 00000000 E		call GetTextColor
+ 000007E7  50			    push eax
+ 000007E8  B8 000000AA			mov eax,lightgreen + (lightgreen * 16)
+ 000007ED  E8 00000000 E		call settextcolor
 
- 000003FA  BE 00001F23 R		mov esi, OFFSET posPortas
- 000003FF  B9 00000004			mov ecx, 4
- 00000404  B0 20			mov al, ' '
- 00000406			AbrePorta:
- 00000406  66| 8B 16			mov dx, [esi]
- 00000409  E8 00000000 E		call GoToXY
- 0000040E  E8 00000000 E		call WriteChar
- 00000413  83 C6 02			add esi, 2
- 00000416  E2 EE			loop AbrePorta
+ 000007F2  BE 000020DC R		mov esi, OFFSET posPortas
+ 000007F7  B9 00000004			mov ecx, 4
+ 000007FC  B0 20			mov al, ' '
+ 000007FE			AbrePorta:
+ 000007FE  66| 8B 16			mov dx, [esi]
+ 00000801  E8 00000000 E		call GoToXY
+ 00000806  E8 00000000 E		call WriteChar
+ 0000080B  83 C6 02			add esi, 2
+ 0000080E  E2 EE			loop AbrePorta
 
- 00000418  58				pop eax
- 00000419  E8 00000000 E		call settextcolor
+ 00000810  58				pop eax
+ 00000811  E8 00000000 E		call settextcolor
 
- 0000041E  C6 05 00001F20 R		mov statusResposta, 1
+ 00000816  C6 05 000020D9 R		mov statusResposta, 1
 	   01
 
- 00000425			Diferente:
- 00000425  C3				ret
- 00000426			VerificaSenha ENDP
+ 0000081D			Diferente:
+ 0000081D  C3				ret
+ 0000081E			VerificaSenha ENDP
 
 				;---------------------------------------------------
- 00000426			DrawPlayer PROC
+ 0000081E			DrawPlayer PROC
 				;
 				; Desenha na tela o jogador em sua posicao atual
 				; Recebe: Nada
 				; Retorna: Nada
 				;---------------------------------------------------
- 00000426  E8 00000000 E		call GetTextColor
- 0000042B  50			    push eax
+ 0000081E  E8 00000000 E		call GetTextColor
+ 00000823  50			    push eax
 
- 0000042C  8A 15 00001E6E R		mov dl, playerX
- 00000432  8A 35 00001E70 R		mov dh, playerY
- 00000438  E8 00000000 E		call GoToxy
+ 00000824  8A 15 00002027 R		mov dl, playerX
+ 0000082A  8A 35 00002029 R		mov dh, playerY
+ 00000830  E8 00000000 E		call GoToxy
 
- 0000043D  B8 0000000B			mov eax,lightcyan
- 00000442  E8 00000000 E		call settextcolor
- 00000447  A0 00001E6D R		mov al, playerSymbol
- 0000044C  E8 00000000 E		call WriteChar
+ 00000835  B8 0000000B			mov eax,lightcyan
+ 0000083A  E8 00000000 E		call settextcolor
+ 0000083F  A0 00002026 R		mov al, playerSymbol
+ 00000844  E8 00000000 E		call WriteChar
 
- 00000451  58				pop eax
- 00000452  E8 00000000 E		call settextcolor
+ 00000849  58				pop eax
+ 0000084A  E8 00000000 E		call settextcolor
 
- 00000457  C3				ret
- 00000458			DrawPlayer ENDP
+ 0000084F  C3				ret
+ 00000850			DrawPlayer ENDP
 
 				;---------------------------------------------------	
- 00000458			ClearPlayer PROC
+ 00000850			ClearPlayer PROC
 				;
 				; Limpa a posicao antiga do jogador, evita que forme um rastro na tela devido ao movimento do jogador
 				; Recebe: Nada
 				; Retorna: Nada
 				;---------------------------------------------------
- 00000458  E8 00000000 E		call GetTextColor
- 0000045D  50			    push eax
+ 00000850  E8 00000000 E		call GetTextColor
+ 00000855  50			    push eax
 
- 0000045E  8A 15 00001E6E R		mov dl, playerX
- 00000464  8A 35 00001E70 R		mov dh, playerY
- 0000046A  E8 00000000 E		call GoToxy
+ 00000856  8A 15 00002027 R		mov dl, playerX
+ 0000085C  8A 35 00002029 R		mov dh, playerY
+ 00000862  E8 00000000 E		call GoToxy
 
- 0000046F  B8 00000000			mov eax,black
- 00000474  E8 00000000 E		call settextcolor
- 00000479  A0 00001E6D R		mov al, playerSymbol
- 0000047E  E8 00000000 E		call WriteChar
+ 00000867  B8 00000000			mov eax,black
+ 0000086C  E8 00000000 E		call settextcolor
+ 00000871  A0 00002026 R		mov al, playerSymbol
+ 00000876  E8 00000000 E		call WriteChar
 
- 00000483  58				pop eax
- 00000484  E8 00000000 E		call settextcolor
- 00000489  C3				ret
- 0000048A			ClearPlayer ENDP
+ 0000087B  58				pop eax
+ 0000087C  E8 00000000 E		call settextcolor
+ 00000881  C3				ret
+ 00000882			ClearPlayer ENDP
 
 				;---------------------------------------------------
- 0000048A			LoadMapaFile PROC
-				;
+ 00000882			LoadMapaFile PROC
 				; Carrega na memoria um mapa
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
 				; Abertura do arquivo	
- 0000048A  BA 00001E60 R		mov edx, OFFSET mapaFileName 
- 0000048F  E8 00000000 E		call OpenInputFile
+ 00000882  BA 00002019 R		mov edx, OFFSET mapaFileName 
+ 00000887  E8 00000000 E		call OpenInputFile
 
- 00000494  BA 00000208 R	    mov  edx,OFFSET BUFFERMAPA
- 00000499  B9 00000E90		    mov  ecx,BUFSIZE
- 0000049E  E8 00000000 E	    call ReadFromFile
+ 0000088C  BA 000003C1 R	    mov  edx,OFFSET BUFFERMAPA
+ 00000891  B9 00000E90		    mov  ecx,BUFSIZE
+ 00000896  E8 00000000 E	    call ReadFromFile
 				    ;jc   show_error_message
 				    ;mov  bytesRead,eax
 
 				; Recupera as informacoes sobre a pergunta e o enigma 
- 000004A3  BA 00000208 R		mov edx,OFFSET BUFFERMAPA
- 000004A8  B8 00001E76 R		mov eax, OFFSET enigma
+ 0000089B  BA 000003C1 R		mov edx,OFFSET BUFFERMAPA
+ 000008A0  B8 0000202F R		mov eax, OFFSET enigma
 				; Identifica a pergunta
- 000004AD			PerguntaInicio:
- 000004AD  8A 0A			mov cl, [edx]
- 000004AF  80 F9 23			cmp cl,'#'
- 000004B2  74 06			je PerguntaFim
- 000004B4  88 08			mov [eax], cl
- 000004B6  40				inc eax
- 000004B7  42				inc edx
- 000004B8  EB F3			jmp PerguntaInicio
- 000004BA			PerguntaFim:
+ 000008A5			PerguntaInicio:
+ 000008A5  8A 0A			mov cl, [edx]
+ 000008A7  80 F9 23			cmp cl,'#'
+ 000008AA  74 06			je PerguntaFim
+ 000008AC  88 08			mov [eax], cl
+ 000008AE  40				inc eax
+ 000008AF  42				inc edx
+ 000008B0  EB F3			jmp PerguntaInicio
+ 000008B2			PerguntaFim:
 					
- 000004BA  42				inc edx
- 000004BB  B8 00001F18 R		mov eax, OFFSET respostaOriginal
+ 000008B2  42				inc edx
+ 000008B3  B8 000020D1 R		mov eax, OFFSET respostaOriginal
 				; Identifica a resposta
- 000004C0			RespostaInicio:
- 000004C0  8A 0A			mov cl, [edx]
- 000004C2  80 F9 23			cmp cl,'#'
- 000004C5  74 06			je RespostaFim
- 000004C7  88 08			mov [eax], cl
- 000004C9  40				inc eax
- 000004CA  42				inc edx
- 000004CB  EB F3			jmp RespostaInicio
- 000004CD			RespostaFim:
+ 000008B8			RespostaInicio:
+ 000008B8  8A 0A			mov cl, [edx]
+ 000008BA  80 F9 23			cmp cl,'#'
+ 000008BD  74 06			je RespostaFim
+ 000008BF  88 08			mov [eax], cl
+ 000008C1  40				inc eax
+ 000008C2  42				inc edx
+ 000008C3  EB F3			jmp RespostaInicio
+ 000008C5			RespostaFim:
 
- 000004CD  83 C2 03			add edx,3
- 000004D0  B8 00001098 R		mov eax, OFFSET mapMatrix
- 000004D5  BB 00000DC8			mov ebx, mapHeight*mapWidth
+ 000008C5  83 C2 03			add edx,3
+ 000008C8  B8 00001251 R		mov eax, OFFSET mapMatrix
+ 000008CD  BB 00000DC8			mov ebx, mapHeight*mapWidth
 
 				; Inicializa a matriz do mapa
- 000004DA			MapaInicio:
- 000004DA  8A 0A			mov cl, [edx]
+ 000008D2			MapaInicio:
+ 000008D2  8A 0A			mov cl, [edx]
 					
- 000004DC  80 F9 0D			cmp cl, 0dh
- 000004DF  75 05			jne ColocaNaMatriz
+ 000008D4  80 F9 0D			cmp cl, 0dh
+ 000008D7  75 05			jne ColocaNaMatriz
 
- 000004E1  83 C2 02			add edx, 2
- 000004E4  EB F4			jmp MapaInicio
+ 000008D9  83 C2 02			add edx, 2
+ 000008DC  EB F4			jmp MapaInicio
 
- 000004E6			ColocaNaMatriz:
+ 000008DE			ColocaNaMatriz:
 					.IF cl == 'x'
- 000004E6  80 F9 78	   *	    cmp    cl, 'x'
- 000004E9  75 04	   *	    jne    @C0038
- 000004EB  B1 DB				mov cl, 0dbh
+ 000008DE  80 F9 78	   *	    cmp    cl, 'x'
+ 000008E1  75 04	   *	    jne    @C0058
+ 000008E3  B1 DB				mov cl, 0dbh
 					.ELSEIF cl == 'p'
- 000004ED  EB 10	   *	    jmp    @C003A
- 000004EF		   *@C0038:
- 000004EF  80 F9 70	   *	    cmp    cl, 'p'
- 000004F2  75 04	   *	    jne    @C003B
- 000004F4  B1 BA				mov cl, 0bah
+ 000008E5  EB 10	   *	    jmp    @C005A
+ 000008E7		   *@C0058:
+ 000008E7  80 F9 70	   *	    cmp    cl, 'p'
+ 000008EA  75 04	   *	    jne    @C005B
+ 000008EC  B1 BA				mov cl, 0bah
 					.ELSEIF cl == 'c'
- 000004F6  EB 07	   *	    jmp    @C003D
- 000004F8		   *@C003B:
- 000004F8  80 F9 63	   *	    cmp    cl, 'c'
- 000004FB  75 02	   *	    jne    @C003E
- 000004FD  B1 FE				mov cl, 0feh
+ 000008EE  EB 07	   *	    jmp    @C005D
+ 000008F0		   *@C005B:
+ 000008F0  80 F9 63	   *	    cmp    cl, 'c'
+ 000008F3  75 02	   *	    jne    @C005E
+ 000008F5  B1 FE				mov cl, 0feh
 					.ENDIF
- 000004FF		   *@C003E:
- 000004FF		   *@C003D:
- 000004FF		   *@C003A:
+ 000008F7		   *@C005E:
+ 000008F7		   *@C005D:
+ 000008F7		   *@C005A:
 
- 000004FF  88 08			mov [eax], cl
- 00000501  40				inc eax
- 00000502  42				inc edx
- 00000503  4B				dec ebx
- 00000504  74 02			jz MapaFim
- 00000506  EB D2			jmp MapaInicio
+ 000008F7  88 08			mov [eax], cl
+ 000008F9  40				inc eax
+ 000008FA  42				inc edx
+ 000008FB  4B				dec ebx
+ 000008FC  74 02			jz MapaFim
+ 000008FE  EB D2			jmp MapaInicio
 
- 00000508			MapaFim:
- 00000508  C3				ret
- 00000509			LoadMapaFile ENDP
+ 00000900			MapaFim:
+ 00000900  C3				ret
+ 00000901			LoadMapaFile ENDP
 
 				;---------------------------------------------------
- 00000509			DrawLogo PROC
+ 00000901			DrawLogo PROC
 				;
 				; Desenha na tela o logo do jogo
 				; Recebe: ?
 				; Retorna: ?
 				;---------------------------------------------------
- 00000509  E8 00000000 E		call GetTextColor
- 0000050E  50			    push eax
+ 00000901  E8 00000000 E		call GetTextColor
+ 00000906  50			    push eax
 					
- 0000050F  B8 00000009			mov eax,lightblue
- 00000514  E8 00000000 E		call settextcolor
+ 00000907  B8 00000009			mov eax,lightblue
+ 0000090C  E8 00000000 E		call settextcolor
 
- 00000519  8A 15 00000000 R		mov dl, Xmargin
- 0000051F  8A 35 00000001 R		mov dh,CurrentLine
- 00000525  FE 05 00000001 R		inc CurrentLine
- 0000052B  E8 00000000 E		call GoToxy
- 00000530  BA 00000007 R		mov edx, offset logo1
- 00000535  E8 00000000 E		call writestring
+ 00000911  8A 15 00000000 R		mov dl, Xmargin
+ 00000917  B6 00			mov dh,0
+ 00000919  C6 05 00000001 R		mov CurrentLine,1
+	   01
+ 00000920  E8 00000000 E		call GoToxy
+ 00000925  BA 00000003 R		mov edx, offset logo1
+ 0000092A  E8 00000000 E		call writestring
 
- 0000053A  B8 00000009			mov eax,lightblue
- 0000053F  E8 00000000 E		call settextcolor
+ 0000092F  B8 00000009			mov eax,lightblue
+ 00000934  E8 00000000 E		call settextcolor
 
- 00000544  8A 15 00000000 R		mov dl, Xmargin
- 0000054A  8A 35 00000001 R		mov dh,CurrentLine
- 00000550  FE 05 00000001 R		inc CurrentLine
- 00000556  E8 00000000 E		call GoToxy
- 0000055B  BA 0000006C R		mov edx, offset logo2
- 00000560  E8 00000000 E		call writestring
+ 00000939  8A 15 00000000 R		mov dl, Xmargin
+ 0000093F  8A 35 00000001 R		mov dh,CurrentLine
+ 00000945  FE 05 00000001 R		inc CurrentLine
+ 0000094B  E8 00000000 E		call GoToxy
+ 00000950  BA 00000068 R		mov edx, offset logo2
+ 00000955  E8 00000000 E		call writestring
 
- 00000565  B8 0000000B			mov eax,lightcyan
- 0000056A  E8 00000000 E		call settextcolor
+ 0000095A  B8 0000000B			mov eax,lightcyan
+ 0000095F  E8 00000000 E		call settextcolor
 
- 0000056F  8A 15 00000000 R		mov dl, Xmargin
- 00000575  8A 35 00000001 R		mov dh,CurrentLine
- 0000057B  FE 05 00000001 R		inc CurrentLine
- 00000581  E8 00000000 E		call GoToxy
- 00000586  BA 000000D2 R		mov edx, offset logo3
- 0000058B  E8 00000000 E		call writestring
+ 00000964  8A 15 00000000 R		mov dl, Xmargin
+ 0000096A  8A 35 00000001 R		mov dh,CurrentLine
+ 00000970  FE 05 00000001 R		inc CurrentLine
+ 00000976  E8 00000000 E		call GoToxy
+ 0000097B  BA 000000CE R		mov edx, offset logo3
+ 00000980  E8 00000000 E		call writestring
 
- 00000590  B8 0000000A			mov eax,lightgreen
- 00000595  E8 00000000 E		call settextcolor
+ 00000985  B8 0000000A			mov eax,lightgreen
+ 0000098A  E8 00000000 E		call settextcolor
 
- 0000059A  8A 15 00000000 R		mov dl, Xmargin
- 000005A0  8A 35 00000001 R		mov dh,CurrentLine
- 000005A6  FE 05 00000001 R		inc CurrentLine
- 000005AC  E8 00000000 E		call GoToxy
- 000005B1  BA 00000138 R		mov edx, offset logo4
- 000005B6  E8 00000000 E		call writestring
+ 0000098F  8A 15 00000000 R		mov dl, Xmargin
+ 00000995  8A 35 00000001 R		mov dh,CurrentLine
+ 0000099B  FE 05 00000001 R		inc CurrentLine
+ 000009A1  E8 00000000 E		call GoToxy
+ 000009A6  BA 00000134 R		mov edx, offset logo4
+ 000009AB  E8 00000000 E		call writestring
 
- 000005BB  B8 00000003			mov eax,cyan
- 000005C0  E8 00000000 E		call settextcolor
+ 000009B0  B8 00000003			mov eax,cyan
+ 000009B5  E8 00000000 E		call settextcolor
 
- 000005C5  8A 15 00000000 R		mov dl, Xmargin
- 000005CB  8A 35 00000001 R		mov dh,CurrentLine
- 000005D1  FE 05 00000001 R		inc CurrentLine
- 000005D7  E8 00000000 E		call GoToxy
- 000005DC  BA 000001A0 R		mov edx, offset logo5
- 000005E1  E8 00000000 E		call writestring
+ 000009BA  8A 15 00000000 R		mov dl, Xmargin
+ 000009C0  8A 35 00000001 R		mov dh,CurrentLine
+ 000009C6  FE 05 00000001 R		inc CurrentLine
+ 000009CC  E8 00000000 E		call GoToxy
+ 000009D1  BA 0000019C R		mov edx, offset logo5
+ 000009D6  E8 00000000 E		call writestring
 
- 000005E6  58				pop eax
- 000005E7  E8 00000000 E		call settextcolor
+ 000009DB  58				pop eax
+ 000009DC  E8 00000000 E		call settextcolor
 
- 000005EC  C3				ret
- 000005ED			DrawLogo ENDP
+ 000009E1  C3				ret
+ 000009E2			DrawLogo ENDP
 
 				;---------------------------------------------------
- 000005ED			DrawEnigma PROC
+ 000009E2			DrawEnigma PROC
 				;
 				; Desenha na tela o local do enigma e o enigma propriamente dito
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 000005ED  B0 2B			mov al, '+'
- 000005EF  B9 00000064			mov ecx, LENGTHOF logo1 - 1
- 000005F4  FE 05 00000001 R		inc CurrentLine
- 000005FA  8A 15 00000000 R		mov dl,Xmargin
- 00000600  8A 35 00000001 R		mov dh,CurrentLine
- 00000606  FE 05 00000001 R		inc CurrentLine
- 0000060C  E8 00000000 E		call GoToxy 
- 00000611			L1:
- 00000611  E8 00000000 E		call WriteChar
- 00000616  E2 F9			loop L1
+ 000009E2  B0 2B			mov al, '+'
+ 000009E4  B9 00000064			mov ecx, LENGTHOF logo1 - 1
+ 000009E9  FE 05 00000001 R		inc CurrentLine
+ 000009EF  8A 15 00000000 R		mov dl,Xmargin
+ 000009F5  8A 35 00000001 R		mov dh,CurrentLine
+ 000009FB  FE 05 00000001 R		inc CurrentLine
+ 00000A01  E8 00000000 E		call GoToxy 
+ 00000A06			L1:
+ 00000A06  E8 00000000 E		call WriteChar
+ 00000A0B  E2 F9			loop L1
 
- 00000618  8A 15 00000000 R		mov dl,Xmargin
- 0000061E  8A 35 00000001 R		mov dh,CurrentLine
- 00000624  E8 00000000 E		call GoToxy
- 00000629  E8 00000000 E		call WriteChar
- 0000062E  B9 00000005			mov ecx, 5 ;Espacamento esquerdo para comecar a escrever a pergunta
- 00000633  B0 20			mov al, ' '
- 00000635			L2:
- 00000635  E8 00000000 E		call WriteChar
- 0000063A  E2 F9			loop L2
+ 00000A0D  8A 15 00000000 R		mov dl,Xmargin
+ 00000A13  8A 35 00000001 R		mov dh,CurrentLine
+ 00000A19  E8 00000000 E		call GoToxy
+ 00000A1E  E8 00000000 E		call WriteChar
+ 00000A23  B9 00000005			mov ecx, 5 ;Espacamento esquerdo para comecar a escrever a pergunta
+ 00000A28  B0 20			mov al, ' '
+ 00000A2A			L2:
+ 00000A2A  E8 00000000 E		call WriteChar
+ 00000A2F  E2 F9			loop L2
 
- 0000063C  BA 00001E76 R		mov edx, OFFSET enigma
- 00000641  E8 00000000 E		call WriteString
+ 00000A31  BA 0000202F R		mov edx, OFFSET enigma
+ 00000A36  E8 00000000 E		call WriteString
 
- 00000646  8A 15 00000000 R		mov dl,Xmargin
- 0000064C  8A 35 00000001 R		mov dh,CurrentLine
- 00000652  80 C2 4A			add dl, OFFSETRESPOSTA ; Aponta para o final da linha do meio da caixa do enigma
- 00000655  E8 00000000 E		call GoToxy
- 0000065A  B0 2B			mov al, '+'
- 0000065C  E8 00000000 E		call WriteChar
+ 00000A3B  8A 15 00000000 R		mov dl,Xmargin
+ 00000A41  8A 35 00000001 R		mov dh,CurrentLine
+ 00000A47  80 C2 4A			add dl, OFFSETRESPOSTA ; Aponta para o final da linha do meio da caixa do enigma
+ 00000A4A  E8 00000000 E		call GoToxy
+ 00000A4F  B0 2B			mov al, '+'
+ 00000A51  E8 00000000 E		call WriteChar
 
- 00000661  BA 00001F0C R		mov edx, OFFSET labelResposta
- 00000666  E8 00000000 E		call WriteString
+ 00000A56  BA 000020C5 R		mov edx, OFFSET labelResposta
+ 00000A5B  E8 00000000 E		call WriteString
 
- 0000066B  B2 0C			mov dl, LENGTHOF labelResposta
- 0000066D  02 15 00000000 R		add dl, Xmargin
- 00000673  80 C2 4A			add dl, OFFSETRESPOSTA
- 00000676  8A 35 00000001 R		mov dh,CurrentLine
- 0000067C  66| 89 15			mov posRespostaJogador, dx
-	   00001F21 R
+ 00000A60  B2 0C			mov dl, LENGTHOF labelResposta
+ 00000A62  02 15 00000000 R		add dl, Xmargin
+ 00000A68  80 C2 4A			add dl, OFFSETRESPOSTA
+ 00000A6B  8A 35 00000001 R		mov dh,CurrentLine
+ 00000A71  66| 89 15			mov posRespostaJogador, dx
+	   000020DA R
 
- 00000683  E8 00000045			call DrawRespostaJogador
+ 00000A78  E8 00000045			call DrawRespostaJogador
 
- 00000688  8A 15 00000000 R		mov dl,Xmargin
- 0000068E  8A 35 00000001 R		mov dh,CurrentLine
- 00000694  80 C2 63			add dl, 99 ; Aponta para o final da linha do meio da caixa do enigma
- 00000697  E8 00000000 E		call GoToxy
- 0000069C  B0 2B			mov al, '+'
- 0000069E  E8 00000000 E		call WriteChar
+ 00000A7D  8A 15 00000000 R		mov dl,Xmargin
+ 00000A83  8A 35 00000001 R		mov dh,CurrentLine
+ 00000A89  80 C2 63			add dl, 99 ; Aponta para o final da linha do meio da caixa do enigma
+ 00000A8C  E8 00000000 E		call GoToxy
+ 00000A91  B0 2B			mov al, '+'
+ 00000A93  E8 00000000 E		call WriteChar
 
- 000006A3  FE 05 00000001 R		inc CurrentLine
- 000006A9  B9 00000064			mov ecx, LENGTHOF logo1 - 1
- 000006AE  8A 15 00000000 R		mov dl,Xmargin
- 000006B4  8A 35 00000001 R		mov dh,CurrentLine
- 000006BA  FE 05 00000001 R		inc CurrentLine
- 000006C0  E8 00000000 E		call GoToxy 
- 000006C5			L3:
- 000006C5  E8 00000000 E		call WriteChar
- 000006CA  E2 F9			loop L3
- 000006CC  C3				ret
- 000006CD			DrawEnigma ENDP
+ 00000A98  FE 05 00000001 R		inc CurrentLine
+ 00000A9E  B9 00000064			mov ecx, LENGTHOF logo1 - 1
+ 00000AA3  8A 15 00000000 R		mov dl,Xmargin
+ 00000AA9  8A 35 00000001 R		mov dh,CurrentLine
+ 00000AAF  FE 05 00000001 R		inc CurrentLine
+ 00000AB5  E8 00000000 E		call GoToxy 
+ 00000ABA			L3:
+ 00000ABA  E8 00000000 E		call WriteChar
+ 00000ABF  E2 F9			loop L3
+ 00000AC1  C3				ret
+ 00000AC2			DrawEnigma ENDP
 
 				;---------------------------------------------------
- 000006CD			DrawRespostaJogador PROC
+ 00000AC2			DrawRespostaJogador PROC
 				;
 				; ?
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 000006CD  E8 00000000 E		call GetTextColor
- 000006D2  50				push eax
+ 00000AC2  E8 00000000 E		call GetTextColor
+ 00000AC7  50				push eax
 
- 000006D3  66| 8B 15			mov dx, posRespostaJogador
-	   00001F21 R
- 000006DA  E8 00000000 E		call GoToxy
+ 00000AC8  66| 8B 15			mov dx, posRespostaJogador
+	   000020DA R
+ 00000ACF  E8 00000000 E		call GoToxy
 
- 000006DF  BA 00001F1C R		mov edx, OFFSET respostaJogador
+ 00000AD4  BA 000020D5 R		mov edx, OFFSET respostaJogador
 
- 000006E4  B8 0000002F			mov eax,white + (green * 16)
- 000006E9  E8 00000000 E		call settextcolor
+ 00000AD9  B8 0000002F			mov eax,white + (green * 16)
+ 00000ADE  E8 00000000 E		call settextcolor
 					
- 000006EE  B0 20			mov al, ' '
- 000006F0  E8 00000000 E		call WriteChar
- 000006F5  8A 02			mov al, [edx]
- 000006F7  E8 00000000 E		call WriteChar
- 000006FC  B0 20			mov al, ' '
- 000006FE  E8 00000000 E		call WriteChar
+ 00000AE3  B0 20			mov al, ' '
+ 00000AE5  E8 00000000 E		call WriteChar
+ 00000AEA  8A 02			mov al, [edx]
+ 00000AEC  E8 00000000 E		call WriteChar
+ 00000AF1  B0 20			mov al, ' '
+ 00000AF3  E8 00000000 E		call WriteChar
 
- 00000703  B8 000000D0			mov eax,black + (lightmagenta * 16)
- 00000708  E8 00000000 E		call settextcolor
+ 00000AF8  B8 000000D0			mov eax,black + (lightmagenta * 16)
+ 00000AFD  E8 00000000 E		call settextcolor
 
- 0000070D  B0 20			mov al, ' '
- 0000070F  E8 00000000 E		call WriteChar
- 00000714  8A 42 01			mov al, [edx+1]
- 00000717  E8 00000000 E		call WriteChar
- 0000071C  B0 20			mov al, ' '
- 0000071E  E8 00000000 E		call WriteChar
+ 00000B02  B0 20			mov al, ' '
+ 00000B04  E8 00000000 E		call WriteChar
+ 00000B09  8A 42 01			mov al, [edx+1]
+ 00000B0C  E8 00000000 E		call WriteChar
+ 00000B11  B0 20			mov al, ' '
+ 00000B13  E8 00000000 E		call WriteChar
 
- 00000723  B8 000000E0			mov eax,black + (yellow * 16)
- 00000728  E8 00000000 E		call settextcolor
+ 00000B18  B8 000000E0			mov eax,black + (yellow * 16)
+ 00000B1D  E8 00000000 E		call settextcolor
 
- 0000072D  B0 20			mov al, ' '
- 0000072F  E8 00000000 E		call WriteChar
- 00000734  8A 42 02			mov al, [edx+2]
- 00000737  E8 00000000 E		call WriteChar
- 0000073C  B0 20			mov al, ' '
- 0000073E  E8 00000000 E		call WriteChar
+ 00000B22  B0 20			mov al, ' '
+ 00000B24  E8 00000000 E		call WriteChar
+ 00000B29  8A 42 02			mov al, [edx+2]
+ 00000B2C  E8 00000000 E		call WriteChar
+ 00000B31  B0 20			mov al, ' '
+ 00000B33  E8 00000000 E		call WriteChar
 
- 00000743  B8 0000009F			mov eax,white + (lightblue * 16)
- 00000748  E8 00000000 E		call settextcolor
+ 00000B38  B8 0000009F			mov eax,white + (lightblue * 16)
+ 00000B3D  E8 00000000 E		call settextcolor
 
- 0000074D  B0 20			mov al, ' '
- 0000074F  E8 00000000 E		call WriteChar
- 00000754  8A 42 03			mov al, [edx+3]
- 00000757  E8 00000000 E		call WriteChar
- 0000075C  B0 20			mov al, ' '
- 0000075E  E8 00000000 E		call WriteChar
+ 00000B42  B0 20			mov al, ' '
+ 00000B44  E8 00000000 E		call WriteChar
+ 00000B49  8A 42 03			mov al, [edx+3]
+ 00000B4C  E8 00000000 E		call WriteChar
+ 00000B51  B0 20			mov al, ' '
+ 00000B53  E8 00000000 E		call WriteChar
 
- 00000763  58				pop eax
- 00000764  E8 00000000 E		call settextcolor
- 00000769  C3				ret
- 0000076A			DrawRespostaJogador ENDP
+ 00000B58  58				pop eax
+ 00000B59  E8 00000000 E		call settextcolor
+ 00000B5E  C3				ret
+ 00000B5F			DrawRespostaJogador ENDP
 				;---------------------------------------------------
- 0000076A			DrawMapa PROC
+ 00000B5F			DrawMapa PROC
 				;
 				; Desenha na tela o mapa do labirinto
 				; Recebe: ? 
 				; Retorna: ?
 				;---------------------------------------------------
- 0000076A  E8 00000000 E		call GetTextColor
- 0000076F  50				push eax
- 00000770  B8 0000000F			mov eax,white
- 00000775  E8 00000000 E		call settextcolor
+ 00000B5F  E8 00000000 E		call GetTextColor
+ 00000B64  50				push eax
+ 00000B65  B8 0000000F			mov eax,white
+ 00000B6A  E8 00000000 E		call settextcolor
 
- 0000077A  B0 DB			mov al, 0dbh
- 0000077C  B9 00000064			mov ecx, mapWidth + 2
- 00000781  FE 05 00000001 R		inc CurrentLine
- 00000787  8A 15 00000000 R		mov dl,Xmargin
- 0000078D  8A 35 00000001 R		mov dh,CurrentLine
- 00000793  66| 89 15			mov minMap,dx
-	   00000003 R
- 0000079A  FE 05 00000001 R		inc CurrentLine
- 000007A0  E8 00000000 E		call GoToxy
+ 00000B6F  B0 DB			mov al, 0dbh
+ 00000B71  B9 00000064			mov ecx, mapWidth + 2
+ 00000B76  FE 05 00000001 R		inc CurrentLine
+ 00000B7C  8A 15 00000000 R		mov dl,Xmargin
+ 00000B82  8A 35 00000001 R		mov dh,CurrentLine
+ 00000B88  66| 89 15			mov minMap,dx
+	   000003BD R
+ 00000B8F  FE 05 00000001 R		inc CurrentLine
+ 00000B95  E8 00000000 E		call GoToxy
 
- 000007A5			ParedeDeCima:
- 000007A5  E8 00000000 E		call WriteChar
- 000007AA  E2 F9			loop ParedeDeCima
+ 00000B9A			ParedeDeCima:
+ 00000B9A  E8 00000000 E		call WriteChar
+ 00000B9F  E2 F9			loop ParedeDeCima
 
- 000007AC  BB 00001098 R		mov ebx, OFFSET mapMatrix
- 000007B1  BE 00001F23 R		mov esi, OFFSET posPortas
+ 00000BA1  BB 00001251 R		mov ebx, OFFSET mapMatrix
+ 00000BA6  BE 000020DC R		mov esi, OFFSET posPortas
 
- 000007B6  B0 DB			mov al, 0dbh
- 000007B8  B9 00000024			mov ecx, mapHeight
- 000007BD			Labirinto:
- 000007BD  8A 15 00000003 R		mov dl, BYTE PTR minMap
- 000007C3  8A 35 00000001 R		mov dh, CurrentLine
- 000007C9  E8 00000000 E		call GoToxy
- 000007CE  E8 00000000 E		call WriteChar; Inicio parede externa esquerda
+ 00000BAB  B0 DB			mov al, 0dbh
+ 00000BAD  B9 00000024			mov ecx, mapHeight
+ 00000BB2			Labirinto:
+ 00000BB2  8A 15 000003BD R		mov dl, BYTE PTR minMap
+ 00000BB8  8A 35 00000001 R		mov dh, CurrentLine
+ 00000BBE  E8 00000000 E		call GoToxy
+ 00000BC3  E8 00000000 E		call WriteChar; Inicio parede externa esquerda
 
- 000007D3  51				push ecx
- 000007D4  B9 00000062			mov ecx, mapWidth
- 000007D9  E8 00000000 E		call GetTextColor
- 000007DE  50				push eax
- 000007DF  B8 00000008			mov eax,gray
- 000007E4  E8 00000000 E		call settextcolor
- 000007E9				LabirintoInterno:
- 000007E9  E8 00000000 E			call GetTextColor
- 000007EE  50					push eax
- 000007EF  8A 03				mov al, [ebx]
+ 00000BC8  51				push ecx
+ 00000BC9  B9 00000062			mov ecx, mapWidth
+ 00000BCE  E8 00000000 E		call GetTextColor
+ 00000BD3  50				push eax
+ 00000BD4  B8 00000008			mov eax,gray
+ 00000BD9  E8 00000000 E		call settextcolor
+ 00000BDE				LabirintoInterno:
+ 00000BDE  E8 00000000 E			call GetTextColor
+ 00000BE3  50					push eax
+ 00000BE4  8A 03				mov al, [ebx]
 						.IF al == 0bah
- 000007F1  3C BA	   *	    cmp    al, 0BAh
- 000007F3  75 20	   *	    jne    @C0040
- 000007F5  66| 52					push dx
+ 00000BE6  3C BA	   *	    cmp    al, 0BAh
+ 00000BE8  75 20	   *	    jne    @C0060
+ 00000BEA  66| 52					push dx
 
- 000007F7  02 15 00000002 R				add dl, CurrentColumn
- 000007FD  FE C2					inc dl
- 000007FF  66| 89 16					mov [esi], dx
+ 00000BEC  02 15 00000002 R				add dl, CurrentColumn
+ 00000BF2  FE C2					inc dl
+ 00000BF4  66| 89 16					mov [esi], dx
 
- 00000802  66| 5A					pop dx
- 00000804  83 C6 02					add esi,2
- 00000807  B8 0000000C					mov eax,lightRed
- 0000080C  E8 00000000 E				call settextcolor
- 00000811  B0 BA					mov al, 0bah
+ 00000BF7  66| 5A					pop dx
+ 00000BF9  83 C6 02					add esi,2
+ 00000BFC  B8 0000000C					mov eax,lightRed
+ 00000C01  E8 00000000 E				call settextcolor
+ 00000C06  B0 BA					mov al, 0bah
 						.ELSEIF al == 0feh
- 00000813  EB 58	   *	    jmp    @C0042
- 00000815		   *@C0040:
- 00000815  3C FE	   *	    cmp    al, 0FEh
- 00000817  75 0E	   *	    jne    @C0043
- 00000819  B8 0000000A					mov eax,lightgreen
- 0000081E  E8 00000000 E				call settextcolor
- 00000823  B0 FE					mov al, 0feh
+ 00000C08  EB 58	   *	    jmp    @C0062
+ 00000C0A		   *@C0060:
+ 00000C0A  3C FE	   *	    cmp    al, 0FEh
+ 00000C0C  75 0E	   *	    jne    @C0063
+ 00000C0E  B8 0000000A					mov eax,lightgreen
+ 00000C13  E8 00000000 E				call settextcolor
+ 00000C18  B0 FE					mov al, 0feh
 						.ELSEIF al == '1'
- 00000825  EB 46	   *	    jmp    @C0045
- 00000827		   *@C0043:
- 00000827  3C 31	   *	    cmp    al, '1'
- 00000829  75 0E	   *	    jne    @C0046
- 0000082B  B8 0000002F					mov eax,white + (green * 16)
- 00000830  E8 00000000 E				call settextcolor
- 00000835  B0 31					mov al, '1'
+ 00000C1A  EB 46	   *	    jmp    @C0065
+ 00000C1C		   *@C0063:
+ 00000C1C  3C 31	   *	    cmp    al, '1'
+ 00000C1E  75 0E	   *	    jne    @C0066
+ 00000C20  B8 0000002F					mov eax,white + (green * 16)
+ 00000C25  E8 00000000 E				call settextcolor
+ 00000C2A  B0 31					mov al, '1'
 						.ELSEIF al == '2'
- 00000837  EB 34	   *	    jmp    @C0048
- 00000839		   *@C0046:
- 00000839  3C 32	   *	    cmp    al, '2'
- 0000083B  75 0E	   *	    jne    @C0049
- 0000083D  B8 000000D0					mov eax,black + (lightmagenta * 16)
- 00000842  E8 00000000 E				call settextcolor
- 00000847  B0 32					mov al, '2'
+ 00000C2C  EB 34	   *	    jmp    @C0068
+ 00000C2E		   *@C0066:
+ 00000C2E  3C 32	   *	    cmp    al, '2'
+ 00000C30  75 0E	   *	    jne    @C0069
+ 00000C32  B8 000000D0					mov eax,black + (lightmagenta * 16)
+ 00000C37  E8 00000000 E				call settextcolor
+ 00000C3C  B0 32					mov al, '2'
 						.ELSEIF al == '3'
- 00000849  EB 22	   *	    jmp    @C004B
- 0000084B		   *@C0049:
- 0000084B  3C 33	   *	    cmp    al, '3'
- 0000084D  75 0E	   *	    jne    @C004C
- 0000084F  B8 000000E0					mov eax,black + (yellow * 16)
- 00000854  E8 00000000 E				call settextcolor
- 00000859  B0 33					mov al, '3'
+ 00000C3E  EB 22	   *	    jmp    @C006B
+ 00000C40		   *@C0069:
+ 00000C40  3C 33	   *	    cmp    al, '3'
+ 00000C42  75 0E	   *	    jne    @C006C
+ 00000C44  B8 000000E0					mov eax,black + (yellow * 16)
+ 00000C49  E8 00000000 E				call settextcolor
+ 00000C4E  B0 33					mov al, '3'
 						.ELSEIF al == '4'
- 0000085B  EB 10	   *	    jmp    @C004E
- 0000085D		   *@C004C:
- 0000085D  3C 34	   *	    cmp    al, '4'
- 0000085F  75 0C	   *	    jne    @C004F
- 00000861  B8 0000009F					mov eax,white + (lightBlue * 16)
- 00000866  E8 00000000 E				call settextcolor
- 0000086B  B0 34					mov al, '4'
+ 00000C50  EB 10	   *	    jmp    @C006E
+ 00000C52		   *@C006C:
+ 00000C52  3C 34	   *	    cmp    al, '4'
+ 00000C54  75 0C	   *	    jne    @C006F
+ 00000C56  B8 0000009F					mov eax,white + (lightBlue * 16)
+ 00000C5B  E8 00000000 E				call settextcolor
+ 00000C60  B0 34					mov al, '4'
 						.ENDIF
- 0000086D		   *@C004F:
- 0000086D		   *@C004E:
- 0000086D		   *@C004B:
- 0000086D		   *@C0048:
- 0000086D		   *@C0045:
- 0000086D		   *@C0042:
+ 00000C62		   *@C006F:
+ 00000C62		   *@C006E:
+ 00000C62		   *@C006B:
+ 00000C62		   *@C0068:
+ 00000C62		   *@C0065:
+ 00000C62		   *@C0062:
 
- 0000086D  E8 00000000 E			call WriteChar
- 00000872  58					pop eax
- 00000873  E8 00000000 E			call settextcolor
+ 00000C62  E8 00000000 E			call WriteChar
+ 00000C67  58					pop eax
+ 00000C68  E8 00000000 E			call settextcolor
 						
- 00000878  43					inc ebx
- 00000879  FE 05 00000002 R			inc CurrentColumn
- 0000087F  66| 49				dec cx
- 00000881  0F 85 FFFFFF62			jnz LabirintoInterno
- 00000887  58				pop eax
- 00000888  E8 00000000 E		call settextcolor
- 0000088D  59				pop ecx
+ 00000C6D  43					inc ebx
+ 00000C6E  FE 05 00000002 R			inc CurrentColumn
+ 00000C74  66| 49				dec cx
+ 00000C76  0F 85 FFFFFF62			jnz LabirintoInterno
+ 00000C7C  58				pop eax
+ 00000C7D  E8 00000000 E		call settextcolor
+ 00000C82  59				pop ecx
 
- 0000088E  B0 DB			mov al, 0dbh
- 00000890  E8 00000000 E		call WriteChar; Inicio parede externa esquerda
- 00000895  FE 05 00000001 R		inc CurrentLine
- 0000089B  C6 05 00000002 R		mov CurrentColumn, 0
+ 00000C83  B0 DB			mov al, 0dbh
+ 00000C85  E8 00000000 E		call WriteChar; Inicio parede externa esquerda
+ 00000C8A  FE 05 00000001 R		inc CurrentLine
+ 00000C90  C6 05 00000002 R		mov CurrentColumn, 0
 	   00
- 000008A2  66| 49			dec cx
- 000008A4  0F 85 FFFFFF13		jnz Labirinto
+ 00000C97  66| 49			dec cx
+ 00000C99  0F 85 FFFFFF13		jnz Labirinto
 
- 000008AA  B0 DB			mov al, 0dbh
- 000008AC  B9 00000064			mov ecx, mapWidth + 2
- 000008B1  8A 15 00000000 R		mov dl,Xmargin
- 000008B7  8A 35 00000001 R		mov dh,CurrentLine
- 000008BD  E8 00000000 E		call GoToxy
- 000008C2			L3:
- 000008C2  E8 00000000 E		call WriteChar
- 000008C7  E2 F9			loop L3
+ 00000C9F  B0 DB			mov al, 0dbh
+ 00000CA1  B9 00000064			mov ecx, mapWidth + 2
+ 00000CA6  8A 15 00000000 R		mov dl,Xmargin
+ 00000CAC  8A 35 00000001 R		mov dh,CurrentLine
+ 00000CB2  E8 00000000 E		call GoToxy
+ 00000CB7			L3:
+ 00000CB7  E8 00000000 E		call WriteChar
+ 00000CBC  E2 F9			loop L3
 
- 000008C9  8A 15 00000000 R		mov dl, Xmargin
- 000008CF  80 C2 63			add dl, mapWidth + 1
- 000008D2  66| 89 15			mov maxMap,dx
-	   00000005 R
+ 00000CBE  8A 15 00000000 R		mov dl, Xmargin
+ 00000CC4  80 C2 63			add dl, mapWidth + 1
+ 00000CC7  66| 89 15			mov maxMap,dx
+	   000003BF R
 
- 000008D9  58				pop eax
+ 00000CCE  58				pop eax
 
- 000008DA  C3				ret
- 000008DB			DrawMapa ENDP
+ 00000CCF  C3				ret
+ 00000CD0			DrawMapa ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/04/17 16:28:58
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/04/17 21:13:39
 getTheKey.asm						     Symbols 2 - 1
 
 
@@ -1212,15 +1660,15 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00001F2B Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000008DB Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000020E4 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000CD0 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-ClearPlayer  . . . . . . . . . .	P Near	 00000458 _TEXT	Length= 00000032 Public STDCALL
+ClearPlayer  . . . . . . . . . .	P Near	 00000850 _TEXT	Length= 00000032 Public STDCALL
 CloseFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CloseHandle  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1228,18 +1676,18 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DrawEnigma . . . . . . . . . . .	P Near	 000005ED _TEXT	Length= 000000E0 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 00000611 _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 00000635 _TEXT	
-  L3 . . . . . . . . . . . . . .	L Near	 000006C5 _TEXT	
-DrawLogo . . . . . . . . . . . .	P Near	 00000509 _TEXT	Length= 000000E4 Public STDCALL
-DrawMapa . . . . . . . . . . . .	P Near	 0000076A _TEXT	Length= 00000171 Public STDCALL
-  ParedeDeCima . . . . . . . . .	L Near	 000007A5 _TEXT	
-  Labirinto  . . . . . . . . . .	L Near	 000007BD _TEXT	
-  LabirintoInterno . . . . . . .	L Near	 000007E9 _TEXT	
-  L3 . . . . . . . . . . . . . .	L Near	 000008C2 _TEXT	
-DrawPlayer . . . . . . . . . . .	P Near	 00000426 _TEXT	Length= 00000032 Public STDCALL
-DrawRespostaJogador  . . . . . .	P Near	 000006CD _TEXT	Length= 0000009D Public STDCALL
+DrawEnigma . . . . . . . . . . .	P Near	 000009E2 _TEXT	Length= 000000E0 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000A06 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 00000A2A _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 00000ABA _TEXT	
+DrawLogo . . . . . . . . . . . .	P Near	 00000901 _TEXT	Length= 000000E1 Public STDCALL
+DrawMapa . . . . . . . . . . . .	P Near	 00000B5F _TEXT	Length= 00000171 Public STDCALL
+  ParedeDeCima . . . . . . . . .	L Near	 00000B9A _TEXT	
+  Labirinto  . . . . . . . . . .	L Near	 00000BB2 _TEXT	
+  LabirintoInterno . . . . . . .	L Near	 00000BDE _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 00000CB7 _TEXT	
+DrawPlayer . . . . . . . . . . .	P Near	 0000081E _TEXT	Length= 00000032 Public STDCALL
+DrawRespostaJogador  . . . . . .	P Near	 00000AC2 _TEXT	Length= 0000009D Public STDCALL
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1254,7 +1702,7 @@ GetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 GetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetConsoleScreenBufferInfo . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetDateTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetElementoMatriz  . . . . . . .	P Near	 00000095 _TEXT	Length= 00000038 Public STDCALL
+GetElementoMatriz  . . . . . . .	P Near	 000002DC _TEXT	Length= 00000038 Public STDCALL
 GetFileTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetKeyState  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetLastError . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1268,27 +1716,35 @@ GetSystemTime  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 GetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetTickCount . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Gotoxy . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HandleControl  . . . . . . . . .	P Near	 000000CD _TEXT	Length= 00000124 Public STDCALL
-  VerificaColisaoLabirinto . . .	L Near	 000001AD _TEXT	
-  Fim  . . . . . . . . . . . . .	L Near	 000001F0 _TEXT	
-HandleSenha  . . . . . . . . . .	P Near	 000001F1 _TEXT	Length= 000001DE Public STDCALL
-  VerificaColisaoLabirinto . . .	L Near	 00000318 _TEXT	
-  Fim  . . . . . . . . . . . . .	L Near	 000003CE _TEXT	
+HandleControl  . . . . . . . . .	P Near	 00000314 _TEXT	Length= 0000029D Public STDCALL
+  VerificaColisaoLabirinto . . .	L Near	 00000418 _TEXT	
+  Fim  . . . . . . . . . . . . .	L Near	 000005AC _TEXT	
+  RETORNA  . . . . . . . . . . .	L Near	 000005B0 _TEXT	
+HandleSenha  . . . . . . . . . .	P Near	 000005B1 _TEXT	Length= 00000216 Public STDCALL
+  VerificaColisaoLabirinto . . .	L Near	 000006FB _TEXT	
+  Fim  . . . . . . . . . . . . .	L Near	 000007C4 _TEXT	
+  RETORNA  . . . . . . . . . . .	L Near	 000007C6 _TEXT	
 HeapAlloc  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapCreate . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-LoadMapaFile . . . . . . . . . .	P Near	 0000048A _TEXT	Length= 0000007F Public STDCALL
-  PerguntaInicio . . . . . . . .	L Near	 000004AD _TEXT	
-  PerguntaFim  . . . . . . . . .	L Near	 000004BA _TEXT	
-  RespostaInicio . . . . . . . .	L Near	 000004C0 _TEXT	
-  RespostaFim  . . . . . . . . .	L Near	 000004CD _TEXT	
-  MapaInicio . . . . . . . . . .	L Near	 000004DA _TEXT	
-  ColocaNaMatriz . . . . . . . .	L Near	 000004E6 _TEXT	
-  MapaFim  . . . . . . . . . . .	L Near	 00000508 _TEXT	
+LoadMapaFile . . . . . . . . . .	P Near	 00000882 _TEXT	Length= 0000007F Public STDCALL
+  PerguntaInicio . . . . . . . .	L Near	 000008A5 _TEXT	
+  PerguntaFim  . . . . . . . . .	L Near	 000008B2 _TEXT	
+  RespostaInicio . . . . . . . .	L Near	 000008B8 _TEXT	
+  RespostaFim  . . . . . . . . .	L Near	 000008C5 _TEXT	
+  MapaInicio . . . . . . . . . .	L Near	 000008D2 _TEXT	
+  ColocaNaMatriz . . . . . . . .	L Near	 000008DE _TEXT	
+  MapaFim  . . . . . . . . . . .	L Near	 00000900 _TEXT	
 LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+MenuInicial  . . . . . . . . . .	P Near	 000000BA _TEXT	Length= 00000222 Public STDCALL
+  INICIALIZADOR  . . . . . . . .	L Near	 000000BA _TEXT	
+  L1 . . . . . . . . . . . . . .	L Near	 000000F6 _TEXT	
+  MAINLOOP . . . . . . . . . . .	L Near	 0000019E _TEXT	
+  FIM  . . . . . . . . . . . . .	L Near	 000002C8 _TEXT	
+  RETORNA  . . . . . . . . . . .	L Near	 000002D7 _TEXT	
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBox . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1311,6 +1767,8 @@ ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReiniciaVariaveis  . . . . . . .	P Near	 000000A1 _TEXT	Length= 00000019 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 000000AD _TEXT	
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1330,10 +1788,10 @@ Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-VerificaSenha  . . . . . . . . .	P Near	 000003CF _TEXT	Length= 00000057 Public STDCALL
-  Verifica . . . . . . . . . . .	L Near	 000003DE _TEXT	
-  AbrePorta  . . . . . . . . . .	L Near	 00000406 _TEXT	
-  Diferente  . . . . . . . . . .	L Near	 00000425 _TEXT	
+VerificaSenha  . . . . . . . . .	P Near	 000007C7 _TEXT	Length= 00000057 Public STDCALL
+  Verifica . . . . . . . . . . .	L Near	 000007D6 _TEXT	
+  AbrePorta  . . . . . . . . . .	L Near	 000007FE _TEXT	
+  Diferente  . . . . . . . . . .	L Near	 0000081D _TEXT	
 WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBin . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1352,10 +1810,10 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000095 Public STDCALL
-  INICIALIZADOR  . . . . . . . .	L Near	 00000000 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000A1 Public STDCALL
+  INICIALIZADOR  . . . . . . . .	L Near	 00000005 _TEXT	
   MAINLOOP . . . . . . . . . . .	L Near	 00000046 _TEXT	
-  FIM  . . . . . . . . . . . . .	L Near	 00000082 _TEXT	
+  FIM  . . . . . . . . . . . . .	L Near	 0000008E _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -1375,7 +1833,7 @@ Symbols:
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
 ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
-BUFFERMAPA . . . . . . . . . . .	Byte	 00000208 _DATA	
+BUFFERMAPA . . . . . . . . . . .	Byte	 000003C1 _DATA	
 BUFSIZE  . . . . . . . . . . . .	Number	 00000E90h   
 CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
 CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
@@ -1580,46 +2038,60 @@ WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 Xmargin  . . . . . . . . . . . .	Byte	 00000000 _DATA	
+answer . . . . . . . . . . . . .	Word	 000003BB _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-dispositivos . . . . . . . . . .	Byte	 00001E72 _DATA	
-elementoAux  . . . . . . . . . .	Byte	 00001E6C _DATA	
-enigma . . . . . . . . . . . . .	Byte	 00001E76 _DATA	
+dispositivos . . . . . . . . . .	Byte	 0000202B _DATA	
+elementoAux  . . . . . . . . . .	Byte	 00002025 _DATA	
+enigma . . . . . . . . . . . . .	Byte	 0000202F _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
-labelResposta  . . . . . . . . .	Byte	 00001F0C _DATA	
+instrucoesString . . . . . . . .	Byte	 00000329 _DATA	
+jogarString  . . . . . . . . . .	Byte	 00000321 _DATA	
+labelResposta  . . . . . . . . .	Byte	 000020C5 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
 lightGreen . . . . . . . . . . .	Number	 0000000Ah   
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
-logo1  . . . . . . . . . . . . .	Byte	 00000007 _DATA	
-logo2  . . . . . . . . . . . . .	Byte	 0000006C _DATA	
-logo3  . . . . . . . . . . . . .	Byte	 000000D2 _DATA	
-logo4  . . . . . . . . . . . . .	Byte	 00000138 _DATA	
-logo5  . . . . . . . . . . . . .	Byte	 000001A0 _DATA	
+logo1  . . . . . . . . . . . . .	Byte	 00000003 _DATA	
+logo2  . . . . . . . . . . . . .	Byte	 00000068 _DATA	
+logo3  . . . . . . . . . . . . .	Byte	 000000CE _DATA	
+logo4  . . . . . . . . . . . . .	Byte	 00000134 _DATA	
+logo5  . . . . . . . . . . . . .	Byte	 0000019C _DATA	
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 mapHeight  . . . . . . . . . . .	Number	 00000024h   
-mapMatrix  . . . . . . . . . . .	Byte	 00001098 _DATA	
+mapMatrix  . . . . . . . . . . .	Byte	 00001251 _DATA	
 mapWidth . . . . . . . . . . . .	Number	 00000062h   
-mapaFileName . . . . . . . . . .	Byte	 00001E60 _DATA	
-maxMap . . . . . . . . . . . . .	Word	 00000005 _DATA	
-minMap . . . . . . . . . . . . .	Word	 00000003 _DATA	
-playerSymbol . . . . . . . . . .	Byte	 00001E6D _DATA	
-playerXAux . . . . . . . . . . .	Byte	 00001E6F _DATA	
-playerX  . . . . . . . . . . . .	Byte	 00001E6E _DATA	
-playerYAux . . . . . . . . . . .	Byte	 00001E71 _DATA	
-playerY  . . . . . . . . . . . .	Byte	 00001E70 _DATA	
-posPortas  . . . . . . . . . . .	Word	 00001F23 _DATA	
-posRespostaJogador . . . . . . .	Word	 00001F21 _DATA	
+mapaFileName . . . . . . . . . .	Byte	 00002019 _DATA	
+maxMap . . . . . . . . . . . . .	Word	 000003BF _DATA	
+minMap . . . . . . . . . . . . .	Word	 000003BD _DATA	
+msgMenu  . . . . . . . . . . . .	Byte	 00000336 _DATA	
+msgVenceu1 . . . . . . . . . . .	Byte	 00000204 _DATA	
+msgVenceu2 . . . . . . . . . . .	Byte	 0000023D _DATA	
+msgVenceu3 . . . . . . . . . . .	Byte	 00000276 _DATA	
+msgVenceu4 . . . . . . . . . . .	Byte	 000002AF _DATA	
+msgVenceu5 . . . . . . . . . . .	Byte	 000002E8 _DATA	
+opcaoSelecionada . . . . . . . .	Byte	 0000037F _DATA	
+playerSymbol . . . . . . . . . .	Byte	 00002026 _DATA	
+playerXAux . . . . . . . . . . .	Byte	 00002028 _DATA	
+playerX  . . . . . . . . . . . .	Byte	 00002027 _DATA	
+playerYAux . . . . . . . . . . .	Byte	 0000202A _DATA	
+playerY  . . . . . . . . . . . .	Byte	 00002029 _DATA	
+posInst  . . . . . . . . . . . .	Word	 00000334 _DATA	
+posJogar . . . . . . . . . . . .	Word	 00000327 _DATA	
+posPortas  . . . . . . . . . . .	Word	 000020DC _DATA	
+posRespostaJogador . . . . . . .	Word	 000020DA _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-respostaJogador  . . . . . . . .	Byte	 00001F1C _DATA	
-respostaOriginal . . . . . . . .	Byte	 00001F18 _DATA	
-statusResposta . . . . . . . . .	Byte	 00001F20 _DATA	
+respostaJogador  . . . . . . . .	Byte	 000020D5 _DATA	
+respostaOriginal . . . . . . . .	Byte	 000020D1 _DATA	
+statusResposta . . . . . . . . .	Byte	 000020D9 _DATA	
+textoEsc . . . . . . . . . . . .	Byte	 0000039F _DATA	
+textoInst  . . . . . . . . . . .	Byte	 00000380 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
