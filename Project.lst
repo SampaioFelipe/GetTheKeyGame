@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/05/17 22:54:45
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/05/17 23:49:23
 getTheKey.asm						     Page 1 - 1
 
 
@@ -194,14 +194,15 @@ getTheKey.asm						     Page 1 - 1
 	   0A 00
 
 				; Menu
- 00000321 4A 4F 47 41 52	jogarString BYTE "JOGAR",0
+ 00000321 4A 4F 47 41 52	jogarString BYTE "JOGAR",0 ; Opcao do menu
 	   00
- 00000327 0000			posJogar WORD ?
- 00000329 49 4E 53 54 52	instrucoesString BYTE "INSTRUCOES",0
+ 00000327 0000			posJogar WORD ? ; Posicao onde sera exibida a opcao "jogar"
+
+ 00000329 49 4E 53 54 52	instrucoesString BYTE "INSTRUCOES",0 ; Opcao do menu
 	   55 43 4F 45 53
 	   00
+ 00000334 0000			posInst WORD ? ; Posicao onde sera exibida a opcao "Instrucoes"
 
- 00000334 0000			posInst WORD ?
  00000336 22 4D 61 78 69	msgMenu BYTE '"Maximize a janela antes de iniciar o jogo para uma melhor experiencia."',0
 	   6D 69 7A 65 20
 	   61 20 6A 61 6E
@@ -217,8 +218,9 @@ getTheKey.asm						     Page 1 - 1
 	   78 70 65 72 69
 	   65 6E 63 69 61
 	   2E 22 00
- 0000037F 00			opcaoSelecionada BYTE 0
- 00000380 49 4E 53 54 52	textoInst BYTE "INSTRUCOES",0dh,0ah,0dh,0ah
+ 0000037F 00			opcaoSelecionada BYTE 0 ; Armazena a opcao do menu selecionada em dado momento
+
+ 00000380 49 4E 53 54 52	textoInst BYTE "INSTRUCOES",0dh,0ah,0dh,0ah ; Texto das instrucoes do jogo
 	   55 43 4F 45 53
 	   0D 0A 0D 0A
  0000038E  4F 20 20 71 75	BYTE 'O  que e o jogo:',0dh,0ah,0dh,0ah
@@ -578,57 +580,54 @@ getTheKey.asm						     Page 1 - 1
  00000A46 0000			maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
 							  ; Formato (Limite X | Limite Y)
 
- = 00000024			mapHeight = 36
- = 00000062			mapWidth = 98 ; LENGHTOF logo1 = 98
+ = 00000024			mapHeight = 36 ; Numero de linhas do mapa
+ = 00000062			mapWidth = 98 ; Numero de colunas do mapa
 
- = 00000E90			BUFSIZE = mapHeight*mapWidth + 200 ; tamanho do mapa mais o tamanho do enigma+resposta
- 00000A48  00000E90 [		BUFFERMAPA BYTE BUFSIZE DUP (?)
+ = 00000E90			BUFSIZE = mapHeight*mapWidth + 200 ; Tamanho do mapa mais o tamanho do enigma+resposta (numero de bytes que sera lido do arquivo externo) 
+ 00000A48  00000E90 [		BUFFERMAPA BYTE BUFSIZE DUP (?) ; Utilizado para guardar os dados do arquivo externo
 	    00
 	   ]
- 000018D8  00000DC8 [		mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
+ 000018D8  00000DC8 [		mapMatrix BYTE BUFSIZE-200 DUP (?) ; Tamanho da matriz, retira 200 referente a parte do enigma
 	    00
 	   ]
- 000026A0 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0
+ 000026A0 6E 69 76 65 6C	mapaFileName BYTE 'nivel1.mapa',0 ; Nome do arquivo externo que contem o mapa e o enigma
 	   31 2E 6D 61 70
 	   61 00
- 000026AC 00			elementoAux BYTE ?
+ 000026AC 00			elementoAux BYTE ? ; Utilizado para armazenar temporariamente o conteudo da matriz que esta na posicao que o jogador esta tentando mover
 
 				;Estrutura Player
  000026AD FE			playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
  000026AE 00			playerX BYTE ? ; Posicao X do jogador na tela
- 000026AF 00			playerXAux BYTE ?
- 000026B0 00			playerY BYTE ? ; Posicao Y do jogador na tela
- 000026B1 00			playerYAux BYTE ?
- 000026B2  00000004 [		dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (uma solucao e armazenar o offset na matriz)
-	    00
-	   ]
+ 000026AF 00			playerY BYTE ? ; Posicao Y do jogador na tela
+ 000026B0 00			playerXAux BYTE ? ; Posicao X futura (que esta preste a mover), serve para verificar a validade do movimento
+ 000026B1 00			playerYAux BYTE ? ; Posicao Y futura (que esta preste a mover), serve para verificar a validade do movimento
 
 				; Estrutura Enigma
- 000026B6  00000096 [		enigma BYTE 150 DUP (?)
+ 000026B2  00000096 [		enigma BYTE 150 DUP (?) ; Contera a pergunta que sera exibida
 	    00
 	   ]
- 0000274C 20 52 45 53 50	labelResposta BYTE " RESPOSTA: ",0
+ 00002748 20 52 45 53 50	labelResposta BYTE " RESPOSTA: ",0 ; Label que imprimida na tela antes da resposta inserida pelo usuario
 	   4F 53 54 41 3A
 	   20 00
- = 0000004A			OFFSETRESPOSTA = 74
- 00002758  00000004 [		respostaOriginal BYTE 4 DUP(?)
+ = 0000004A			OFFSETRESPOSTA = 74 ; Quantidade de espacamento para exibir a resposta
+ 00002754  00000004 [		respostaOriginal BYTE 4 DUP(?) ; Contera a resposta original para ser comparada com a do jogador
 	    00
 	   ]
- 0000275C  00000004 [		respostaJogador BYTE 4 DUP(?)
+ 00002758  00000004 [		respostaJogador BYTE 4 DUP(?) ; A letras fornecidas pelo jogador serao armazenadas aqui
 	    00
 	   ]
- 00002760 00			statusResposta BYTE 0
- 00002761 0000			posRespostaJogador WORD ?
+ 0000275C 00			statusResposta BYTE 0 ; Indica se a resposta foi descoberta ou nao
+ 0000275D 0000			posRespostaJogador WORD ? ; Indica a posicao na tela onde a resposta do jogador sera exibida
 
 				; Portas
- 00002763  00000004 [		posPortas WORD 4 DUP (?)
+ 0000275F  00000004 [		posPortas WORD 4 DUP (?) ; Armazena a posicao de cada porta
 	    0000
 	   ]
 
 				; Temporizador
- 0000276B 00000000		tempoInicial DWORD ?
- 0000276F 0000			posTemporizador WORD ?
- 00002771 54 45 4D 50 4F	labelTempo BYTE "TEMPO:",0
+ 00002767 00000000		tempoInicial DWORD ? ; Armazena o tempo inicial da partida para calcular o tempo decorrido
+ 0000276B 0000			posTemporizador WORD ? ; Posicao onde sera desenhado o temporizador
+ 0000276D 54 45 4D 50 4F	labelTempo BYTE "TEMPO:",0 ; Label que antecede o temporizador
 	   3A 00
 
  00000000			.code
@@ -653,17 +652,17 @@ getTheKey.asm						     Page 1 - 1
  0000003C  A2 000026AE R		mov playerX, al
  00000041  A0 00000A45 R		mov al, BYTE PTR minMap+1
  00000046  FE C0			inc al
- 00000048  A2 000026B0 R		mov playerY, al
+ 00000048  A2 000026AF R		mov playerY, al
  0000004D  E8 000007F8			call DrawPlayer ; Desenha o jogador na tela na posicao configurada
 					
  00000052  E8 00000000 E		call GetMseconds
- 00000057  A3 0000276B R		mov tempoInicial,eax
+ 00000057  A3 00002767 R		mov tempoInicial,eax
 
  0000005C			MAINLOOP:
  0000005C  E8 00000CD9			call DrawTempo
 
  00000061  66| 0F B6 0D			movzx cx, playerY
-	   000026B0 R
+	   000026AF R
  00000069  66| 51			push cx
  0000006B  66| 0F B6 0D			movzx cx, playerX
 	   000026AE R
@@ -702,11 +701,11 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  000000C0			ReiniciaVariaveis PROC
-				; ?
-				; Recebe: ?
-				; Retorna: ?
+				; Retorna o valor das variaveis principais para seu estado inicial (zeradas), para tornar possivel jogar de novo
+				; Recebe: resposta do jogador, status resposta
+				; Retorna: nada
 				;---------------------------------------------------
- 000000C0  BA 0000275C R		mov edx, OFFSET respostaJogador
+ 000000C0  BA 00002758 R		mov edx, OFFSET respostaJogador
  000000C5  B3 20			mov bl, ' '
  000000C7  B9 00000004			mov ecx, 4
  000000CC			L1:
@@ -714,16 +713,16 @@ getTheKey.asm						     Page 1 - 1
  000000CE  42				inc edx
  000000CF  E2 FB			loop L1
 
- 000000D1  C6 05 00002760 R		mov statusResposta, 0
+ 000000D1  C6 05 0000275C R		mov statusResposta, 0
 	   00
 
  000000D8  C3				ret
  000000D9			ReiniciaVariaveis ENDP
 				;---------------------------------------------------
  000000D9			MenuInicial PROC
-				; ?
+				; Desenha na tela o menu inicial e controla as opcoes de jogar ou ver as instrucoes
 				; Recebe: ?
-				; Retorna: ?
+				; Retorna: al == 0 se pressionado o botao ESC, al == 0 caso contrario 
 				;---------------------------------------------------
  000000D9			INICIALIZADOR:
  000000D9  C6 05 0000037F R		mov opcaoSelecionada, 0
@@ -843,7 +842,7 @@ getTheKey.asm						     Page 1 - 1
  0000022F  B0 3C				mov al, '<'
  00000231  E8 00000000 E			call WriteChar
 
-					.ELSEIF ah == 50h
+					.ELSEIF ah == 50h ;Seta para baixo
  00000236  E9 000000B6	   *	    jmp    @C0006
  0000023B		   *@C0004:
  0000023B  80 FC 50	   *	    cmp    ah, 050h
@@ -882,7 +881,7 @@ getTheKey.asm						     Page 1 - 1
 
  000002A2  B0 3C				mov al, '<'
  000002A4  E8 00000000 E			call WriteChar
-					.ELSEIF al == 0dh
+					.ELSEIF al == 0dh ; Tecla enter
  000002A9  EB 46	   *	    jmp    @C0009
  000002AB		   *@C0007:
  000002AB  3C 0D	   *	    cmp    al, 00Dh
@@ -975,20 +974,20 @@ getTheKey.asm						     Page 1 - 1
  00000340			HandleControl PROC
 				; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
 				; Recebe: eax = tecla que foi acionada
-				; Retorna: Nada
+				; Retorna: ax indicando se a tecla esc foi pressionada ou nao
 				;---------------------------------------------------
 					.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
  00000340  80 FC 48	   *	    cmp    ah, 048h
  00000343  75 38	   *	    jne    @C0014
  00000345  8A 1D 00000A45 R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
  0000034B  FE C3				inc bl
- 0000034D  38 1D 000026B0 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+ 0000034D  38 1D 000026AF R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
  00000353  0F 84 0000027F			je Fim
 
  00000359  8A 0D 000026AE R			mov cl, playerX
- 0000035F  88 0D 000026AF R			mov playerXAux, cl
+ 0000035F  88 0D 000026B0 R			mov playerXAux, cl
 
- 00000365  8A 0D 000026B0 R			mov cl, playerY
+ 00000365  8A 0D 000026AF R			mov cl, playerY
  0000036B  FE C9				dec cl
  0000036D  88 0D 000026B1 R			mov playerYAux, cl
 
@@ -1000,13 +999,13 @@ getTheKey.asm						     Page 1 - 1
  00000380  75 38	   *	    jne    @C0017
  00000382  8A 1D 00000A47 R			mov bl, BYTE PTR maxMap+1
  00000388  FE CB				dec bl
- 0000038A  38 1D 000026B0 R			cmp playerY, bl
+ 0000038A  38 1D 000026AF R			cmp playerY, bl
  00000390  0F 84 00000242			je Fim
 
  00000396  8A 0D 000026AE R			mov cl, playerX
- 0000039C  88 0D 000026AF R			mov playerXAux, cl
+ 0000039C  88 0D 000026B0 R			mov playerXAux, cl
 
- 000003A2  8A 0D 000026B0 R			mov cl, playerY
+ 000003A2  8A 0D 000026AF R			mov cl, playerY
  000003A8  FE C1				inc cl
  000003AA  88 0D 000026B1 R			mov playerYAux, cl
 
@@ -1023,9 +1022,9 @@ getTheKey.asm						     Page 1 - 1
 
  000003D3  8A 0D 000026AE R			mov cl, playerX
  000003D9  FE C1				inc cl
- 000003DB  88 0D 000026AF R			mov playerXAux, cl
+ 000003DB  88 0D 000026B0 R			mov playerXAux, cl
 
- 000003E1  8A 0D 000026B0 R			mov cl, playerY
+ 000003E1  8A 0D 000026AF R			mov cl, playerY
  000003E7  88 0D 000026B1 R			mov playerYAux, cl
 
  000003ED  EB 55				jmp VerificaColisaoLabirinto
@@ -1041,9 +1040,9 @@ getTheKey.asm						     Page 1 - 1
 
  0000040A  8A 0D 000026AE R			mov cl, playerX
  00000410  FE C9				dec cl
- 00000412  88 0D 000026AF R			mov playerXAux, cl
+ 00000412  88 0D 000026B0 R			mov playerXAux, cl
 
- 00000418  8A 0D 000026B0 R			mov cl, playerY
+ 00000418  8A 0D 000026AF R			mov cl, playerY
  0000041E  88 0D 000026B1 R			mov playerYAux, cl
 
  00000424  EB 1E				jmp VerificaColisaoLabirinto
@@ -1073,7 +1072,7 @@ getTheKey.asm						     Page 1 - 1
 	   000026B1 R
  0000044C  66| 51			push cx
  0000044E  66| 0F B6 0D			movzx cx, playerXAux
-	   000026AF R
+	   000026B0 R
  00000456  66| 51			push cx
  00000458  E8 FFFFFEAB			call GetElementoMatriz
 
@@ -1086,7 +1085,7 @@ getTheKey.asm						     Page 1 - 1
  0000046B		   *@C0023:
  0000046B  3C BA	   *	    cmp    al, 0BAh
  0000046D  75 18	   *	    jne    @C0026
- 0000046F  8A 1D 00002760 R			mov bl, statusResposta
+ 0000046F  8A 1D 0000275C R			mov bl, statusResposta
 						.IF bl == 0
  00000475  0A DB	   *	    or	bl, bl
  00000477  0F 85 00000139  *	    jne    @C0028
@@ -1175,10 +1174,10 @@ getTheKey.asm						     Page 1 - 1
  000005B6		   *@C0028:
 
  000005B6  E8 000002C1				call ClearPlayer
- 000005BB  8A 0D 000026AF R			mov cl, playerXAux
+ 000005BB  8A 0D 000026B0 R			mov cl, playerXAux
  000005C1  88 0D 000026AE R			mov playerX, cl
  000005C7  8A 0D 000026B1 R			mov cl, playerYAux
- 000005CD  88 0D 000026B0 R			mov playerY, cl
+ 000005CD  88 0D 000026AF R			mov playerY, cl
 
  000005D3  E8 00000272			call DrawPlayer ; Desenha o jogador na nova posicao
  000005D8			Fim:
@@ -1189,22 +1188,22 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  000005DD			HandleSenha PROC
-				; ?
+				; Gerencia o movimento e a entrada de caracteres fornecidos pelo jogador quando este esta em um dispositivo de senha
 				; Recebe: eax = tecla que foi acionada, bl
-				; Retorna: Nada
+				; Retorna: ax indicando se a tecla esc foi pressionada ou nao
 				;---------------------------------------------------
 					.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
  000005DD  80 FC 48	   *	    cmp    ah, 048h
  000005E0  75 38	   *	    jne    @C002D
  000005E2  8A 1D 00000A45 R			mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
  000005E8  FE C3				inc bl
- 000005EA  38 1D 000026B0 R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
+ 000005EA  38 1D 000026AF R			cmp playerY, bl ; Se o movimento fizer com que o jogador ultrapasse o limite do mapa, esse movimento nao e realizado
  000005F0  0F 84 000001FA			je Fim
 
  000005F6  8A 0D 000026AE R			mov cl, playerX
- 000005FC  88 0D 000026AF R			mov playerXAux, cl
+ 000005FC  88 0D 000026B0 R			mov playerXAux, cl
 
- 00000602  8A 0D 000026B0 R			mov cl, playerY
+ 00000602  8A 0D 000026AF R			mov cl, playerY
  00000608  FE C9				dec cl
  0000060A  88 0D 000026B1 R			mov playerYAux, cl
 
@@ -1216,13 +1215,13 @@ getTheKey.asm						     Page 1 - 1
  0000061D  75 38	   *	    jne    @C0030
  0000061F  8A 1D 00000A47 R			mov bl, BYTE PTR maxMap+1
  00000625  FE CB				dec bl
- 00000627  38 1D 000026B0 R			cmp playerY, bl
+ 00000627  38 1D 000026AF R			cmp playerY, bl
  0000062D  0F 84 000001BD			je Fim
 
  00000633  8A 0D 000026AE R			mov cl, playerX
- 00000639  88 0D 000026AF R			mov playerXAux, cl
+ 00000639  88 0D 000026B0 R			mov playerXAux, cl
 
- 0000063F  8A 0D 000026B0 R			mov cl, playerY
+ 0000063F  8A 0D 000026AF R			mov cl, playerY
  00000645  FE C1				inc cl
  00000647  88 0D 000026B1 R			mov playerYAux, cl
 
@@ -1239,9 +1238,9 @@ getTheKey.asm						     Page 1 - 1
 
  00000670  8A 0D 000026AE R			mov cl, playerX
  00000676  FE C1				inc cl
- 00000678  88 0D 000026AF R			mov playerXAux, cl
+ 00000678  88 0D 000026B0 R			mov playerXAux, cl
 
- 0000067E  8A 0D 000026B0 R			mov cl, playerY
+ 0000067E  8A 0D 000026AF R			mov cl, playerY
  00000684  88 0D 000026B1 R			mov playerYAux, cl
 
  0000068A  E9 00000098				jmp VerificaColisaoLabirinto
@@ -1257,9 +1256,9 @@ getTheKey.asm						     Page 1 - 1
 
  000006AD  8A 0D 000026AE R			mov cl, playerX
  000006B3  FE C9				dec cl
- 000006B5  88 0D 000026AF R			mov playerXAux, cl
+ 000006B5  88 0D 000026B0 R			mov playerXAux, cl
 
- 000006BB  8A 0D 000026B0 R			mov cl, playerY
+ 000006BB  8A 0D 000026AF R			mov cl, playerY
  000006C1  88 0D 000026B1 R			mov playerYAux, cl
 
  000006C7  EB 5E				jmp VerificaColisaoLabirinto
@@ -1281,7 +1280,7 @@ getTheKey.asm						     Page 1 - 1
  000006E6  EB 3F	   *	    jmp    @C003E
  000006E8		   *@C003C:
  000006E8  8A 1D 000026AC R			mov bl, elementoAux
- 000006EE  BA 0000275C R			mov edx, OFFSET respostaJogador
+ 000006EE  BA 00002758 R			mov edx, OFFSET respostaJogador
 						.IF bl == '1'
  000006F3  80 FB 31	   *	    cmp    bl, '1'
  000006F6  75 04	   *	    jne    @C003F
@@ -1326,7 +1325,7 @@ getTheKey.asm						     Page 1 - 1
 	   000026B1 R
  0000072F  66| 51			push cx
  00000731  66| 0F B6 0D			movzx cx, playerXAux
-	   000026AF R
+	   000026B0 R
  00000739  66| 51			push cx
  0000073B  E8 FFFFFBC8			call GetElementoMatriz
 
@@ -1338,7 +1337,7 @@ getTheKey.asm						     Page 1 - 1
  00000749  E9 0000009D	   *	    jmp    @C004C
  0000074E		   *@C004A:
  0000074E  8A 15 000026AE R			mov dl, playerX
- 00000754  8A 35 000026B0 R			mov dh, playerY
+ 00000754  8A 35 000026AF R			mov dh, playerY
  0000075A  8A 1D 000026AC R			mov bl, elementoAux
  00000760  E8 00000000 E			call GetTextColor
  00000765  50					push eax
@@ -1393,10 +1392,10 @@ getTheKey.asm						     Page 1 - 1
  000007CD  58					pop eax
  000007CE  E8 00000000 E			call settextcolor
 
- 000007D3  8A 0D 000026AF R			mov cl, playerXAux
+ 000007D3  8A 0D 000026B0 R			mov cl, playerXAux
  000007D9  88 0D 000026AE R			mov playerX, cl
  000007DF  8A 0D 000026B1 R			mov cl, playerYAux
- 000007E5  88 0D 000026B0 R			mov playerY, cl
+ 000007E5  88 0D 000026AF R			mov playerY, cl
 					.ENDIF
  000007EB		   *@C004C:
 
@@ -1409,12 +1408,12 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  000007F3			VerificaSenha PROC
-				; ?
-				; Recebe: Nada
-				; Retorna: Nada
+				; Verifica se a resposta fornecida pelo jogador e igual a resposta do enigma, caso for, abre as portas
+				; Recebe: resposta original e resposta do jogador
+				; Retorna: statusResposta com  1 se está correto, ou com 0 se errado
 				;---------------------------------------------------
- 000007F3  BE 00002758 R		mov esi, OFFSET respostaOriginal
- 000007F8  BA 0000275C R		mov edx, OFFSET respostaJogador
+ 000007F3  BE 00002754 R		mov esi, OFFSET respostaOriginal
+ 000007F8  BA 00002758 R		mov edx, OFFSET respostaJogador
  000007FD  B9 00000004			mov ecx, 4
  00000802			Verifica:
  00000802  8A 06			mov al, [esi]
@@ -1431,7 +1430,7 @@ getTheKey.asm						     Page 1 - 1
  00000814  B8 000000AA			mov eax,lightgreen + (lightgreen * 16)
  00000819  E8 00000000 E		call settextcolor
 
- 0000081E  BE 00002763 R		mov esi, OFFSET posPortas
+ 0000081E  BE 0000275F R		mov esi, OFFSET posPortas
  00000823  B9 00000004			mov ecx, 4
  00000828  B0 20			mov al, ' '
  0000082A			AbrePorta:
@@ -1444,7 +1443,7 @@ getTheKey.asm						     Page 1 - 1
  0000083C  58				pop eax
  0000083D  E8 00000000 E		call settextcolor
 
- 00000842  C6 05 00002760 R		mov statusResposta, 1
+ 00000842  C6 05 0000275C R		mov statusResposta, 1
 	   01
 
  00000849			Diferente:
@@ -1453,16 +1452,15 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  0000084A			DrawPlayer PROC
-				;
 				; Desenha na tela o jogador em sua posicao atual
-				; Recebe: Nada
+				; Recebe: playerX, playerY
 				; Retorna: Nada
 				;---------------------------------------------------
  0000084A  E8 00000000 E		call GetTextColor
  0000084F  50			    push eax
 
  00000850  8A 15 000026AE R		mov dl, playerX
- 00000856  8A 35 000026B0 R		mov dh, playerY
+ 00000856  8A 35 000026AF R		mov dh, playerY
  0000085C  E8 00000000 E		call GoToxy
 
  00000861  B8 0000000B			mov eax,lightcyan
@@ -1478,16 +1476,15 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------	
  0000087C			ClearPlayer PROC
-				;
 				; Limpa a posicao antiga do jogador, evita que forme um rastro na tela devido ao movimento do jogador
-				; Recebe: Nada
+				; Recebe: playerX, playerY
 				; Retorna: Nada
 				;---------------------------------------------------
  0000087C  E8 00000000 E		call GetTextColor
  00000881  50			    push eax
 
  00000882  8A 15 000026AE R		mov dl, playerX
- 00000888  8A 35 000026B0 R		mov dh, playerY
+ 00000888  8A 35 000026AF R		mov dh, playerY
  0000088E  E8 00000000 E		call GoToxy
 
  00000893  B8 00000000			mov eax,black
@@ -1502,9 +1499,9 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  000008AE			LoadMapaFile PROC
-				; Carrega na memoria um mapa
-				; Recebe: ? 
-				; Retorna: ?
+				; Le um arquivo externo e carrega na memoria seu conteudo. Preenche os dados do enigma e popula a matriz com os dados obtidos desse arquivo
+				; Recebe: nome do arquivo 
+				; Retorna: CL = 1 se houve um erro ao abrir o arquivo, CL = 0 caso contrario
 				;---------------------------------------------------
 				; Abertura do arquivo	
  000008AE  BA 000026A0 R		mov edx, OFFSET mapaFileName 
@@ -1514,7 +1511,7 @@ getTheKey.asm						     Page 1 - 1
  000008BD  B9 00000E90		    mov  ecx,BUFSIZE
  000008C2  E8 00000000 E	    call ReadFromFile
  000008C7  73 13		    jnc   SemErro
-				    ;mov  bytesRead,eax
+
  000008C9  BA 00000A17 R		mov edx, OFFSET msgError
  000008CE  E8 00000000 E		call WriteString
  000008D3  E8 00000000 E		call ReadChar
@@ -1523,7 +1520,7 @@ getTheKey.asm						     Page 1 - 1
  000008DC			SemErro:
 				; Recupera as informacoes sobre a pergunta e o enigma 
  000008DC  BA 00000A48 R		mov edx,OFFSET BUFFERMAPA
- 000008E1  B8 000026B6 R		mov eax, OFFSET enigma
+ 000008E1  B8 000026B2 R		mov eax, OFFSET enigma
 				; Identifica a pergunta
  000008E6			PerguntaInicio:
  000008E6  8A 0A			mov cl, [edx]
@@ -1536,7 +1533,7 @@ getTheKey.asm						     Page 1 - 1
  000008F3			PerguntaFim:
 					
  000008F3  42				inc edx
- 000008F4  B8 00002758 R		mov eax, OFFSET respostaOriginal
+ 000008F4  B8 00002754 R		mov eax, OFFSET respostaOriginal
 				; Identifica a resposta
  000008F9			RespostaInicio:
  000008F9  8A 0A			mov cl, [edx]
@@ -1599,10 +1596,9 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  00000944			DrawLogo PROC
-				;
 				; Desenha na tela o logo do jogo
-				; Recebe: ?
-				; Retorna: ?
+				; Recebe: strings com o logo
+				; Retorna: NADA
 				;---------------------------------------------------
  00000944  E8 00000000 E		call GetTextColor
  00000949  50			    push eax
@@ -1666,10 +1662,9 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  00000A25			DrawEnigma PROC
-				;
-				; Desenha na tela o local do enigma e o enigma propriamente dito
-				; Recebe: ? 
-				; Retorna: ?
+				; Desenha na tela o local do enigma, o enigma propriamente dito e o local onde ficara a resposta do jogador
+				; Recebe: Enigma 
+				; Retorna: NADA
 				;---------------------------------------------------
  00000A25  B0 2B			mov al, '+'
  00000A27  B9 00000064			mov ecx, LENGTHOF logo1 - 1
@@ -1692,7 +1687,7 @@ getTheKey.asm						     Page 1 - 1
  00000A6D  E8 00000000 E		call WriteChar
  00000A72  E2 F9			loop L2
 
- 00000A74  BA 000026B6 R		mov edx, OFFSET enigma
+ 00000A74  BA 000026B2 R		mov edx, OFFSET enigma
  00000A79  E8 00000000 E		call WriteString
 
  00000A7E  8A 15 00000000 R		mov dl,Xmargin
@@ -1702,7 +1697,7 @@ getTheKey.asm						     Page 1 - 1
  00000A92  B0 2B			mov al, '+'
  00000A94  E8 00000000 E		call WriteChar
 
- 00000A99  BA 0000274C R		mov edx, OFFSET labelResposta
+ 00000A99  BA 00002748 R		mov edx, OFFSET labelResposta
  00000A9E  E8 00000000 E		call WriteString
 
  00000AA3  B2 0C			mov dl, LENGTHOF labelResposta
@@ -1710,7 +1705,7 @@ getTheKey.asm						     Page 1 - 1
  00000AAB  80 C2 4A			add dl, OFFSETRESPOSTA
  00000AAE  8A 35 00000001 R		mov dh,CurrentLine
  00000AB4  66| 89 15			mov posRespostaJogador, dx
-	   00002761 R
+	   0000275D R
 
  00000ABB  E8 00000045			call DrawRespostaJogador
 
@@ -1735,19 +1730,18 @@ getTheKey.asm						     Page 1 - 1
 
 				;---------------------------------------------------
  00000B05			DrawRespostaJogador PROC
-				;
-				; ?
-				; Recebe: ? 
-				; Retorna: ?
+				; Desenha na tela a situacao atual da string que representa a resposta fornecida pelo jogador
+				; Recebe: resposta do jogador e local onde sera desenhada
+				; Retorna: NADA
 				;---------------------------------------------------
  00000B05  E8 00000000 E		call GetTextColor
  00000B0A  50				push eax
 
  00000B0B  66| 8B 15			mov dx, posRespostaJogador
-	   00002761 R
+	   0000275D R
  00000B12  E8 00000000 E		call GoToxy
 
- 00000B17  BA 0000275C R		mov edx, OFFSET respostaJogador
+ 00000B17  BA 00002758 R		mov edx, OFFSET respostaJogador
 
  00000B1C  B8 0000002F			mov eax,white + (green * 16)
  00000B21  E8 00000000 E		call settextcolor
@@ -1793,12 +1787,12 @@ getTheKey.asm						     Page 1 - 1
  00000B9C  E8 00000000 E		call settextcolor
  00000BA1  C3				ret
  00000BA2			DrawRespostaJogador ENDP
+
 				;---------------------------------------------------
  00000BA2			DrawMapa PROC
-				;
 				; Desenha na tela o mapa do labirinto
-				; Recebe: ? 
-				; Retorna: ?
+				; Recebe: mapa
+				; Retorna: NADA
 				;---------------------------------------------------
  00000BA2  E8 00000000 E		call GetTextColor
  00000BA7  50				push eax
@@ -1820,7 +1814,7 @@ getTheKey.asm						     Page 1 - 1
  00000BE2  E2 F9			loop ParedeDeCima
 
  00000BE4  BB 000018D8 R		mov ebx, OFFSET mapMatrix
- 00000BE9  BE 00002763 R		mov esi, OFFSET posPortas
+ 00000BE9  BE 0000275F R		mov esi, OFFSET posPortas
 
  00000BEE  B0 DB			mov al, 0dbh
  00000BF0  B9 00000024			mov ecx, mapHeight
@@ -1942,9 +1936,9 @@ getTheKey.asm						     Page 1 - 1
 
  00000D1F  80 C2 07			add dl, LENGTHOF labelTempo
  00000D22  66| 89 15			mov posTemporizador,dx
-	   0000276F R
+	   0000276B R
 
- 00000D29  BA 00002771 R		mov edx, OFFSET labelTempo
+ 00000D29  BA 0000276D R		mov edx, OFFSET labelTempo
  00000D2E  E8 00000000 E		call WriteString
 
  00000D33  58				pop eax
@@ -1952,26 +1946,26 @@ getTheKey.asm						     Page 1 - 1
 
  00000D39  C3				ret
  00000D3A			DrawMapa ENDP
+
 				;---------------------------------------------------
  00000D3A			DrawTempo PROC
-				;
 				; Desenha na tela o tempo corrido desde a inicializacao da partida
-				; Recebe: ? 
-				; Retorna: ?
+				; Recebe: tempo inicial e posicao onde sera desenhado
+				; Retorna: NADA
 				;---------------------------------------------------
  00000D3A  66| 8B 15			mov dx, posTemporizador
-	   0000276F R
+	   0000276B R
  00000D41  E8 00000000 E		call GoToxy
 					
  00000D46  E8 00000000 E		call GetMseconds
- 00000D4B  2B 05 0000276B R		sub	eax, tempoInicial
+ 00000D4B  2B 05 00002767 R		sub	eax, tempoInicial
  00000D51  C1 E8 0A			shr eax,10
  00000D54  E8 00000000 E		call WriteDec
 
  00000D59  C3				ret
  00000D5A			DrawTempo ENDP
 				END main
-Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/05/17 22:54:45
+Microsoft (R) Macro Assembler Version 12.00.21005.1	    02/05/17 23:49:23
 getTheKey.asm						     Symbols 2 - 1
 
 
@@ -2065,7 +2059,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00002778 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00002774 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000D5A Para	  Public  'CODE'	
 
 
@@ -2452,16 +2446,15 @@ black  . . . . . . . . . . . . .	Number	 00000000h
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-dispositivos . . . . . . . . . .	Byte	 000026B2 _DATA	
 elementoAux  . . . . . . . . . .	Byte	 000026AC _DATA	
-enigma . . . . . . . . . . . . .	Byte	 000026B6 _DATA	
+enigma . . . . . . . . . . . . .	Byte	 000026B2 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
 instrucoesString . . . . . . . .	Byte	 00000329 _DATA	
 jogarString  . . . . . . . . . .	Byte	 00000321 _DATA	
-labelResposta  . . . . . . . . .	Byte	 0000274C _DATA	
-labelTempo . . . . . . . . . . .	Byte	 00002771 _DATA	
+labelResposta  . . . . . . . . .	Byte	 00002748 _DATA	
+labelTempo . . . . . . . . . . .	Byte	 0000276D _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -2489,20 +2482,20 @@ msgVenceu4 . . . . . . . . . . .	Byte	 000002AF _DATA
 msgVenceu5 . . . . . . . . . . .	Byte	 000002E8 _DATA	
 opcaoSelecionada . . . . . . . .	Byte	 0000037F _DATA	
 playerSymbol . . . . . . . . . .	Byte	 000026AD _DATA	
-playerXAux . . . . . . . . . . .	Byte	 000026AF _DATA	
+playerXAux . . . . . . . . . . .	Byte	 000026B0 _DATA	
 playerX  . . . . . . . . . . . .	Byte	 000026AE _DATA	
 playerYAux . . . . . . . . . . .	Byte	 000026B1 _DATA	
-playerY  . . . . . . . . . . . .	Byte	 000026B0 _DATA	
+playerY  . . . . . . . . . . . .	Byte	 000026AF _DATA	
 posInst  . . . . . . . . . . . .	Word	 00000334 _DATA	
 posJogar . . . . . . . . . . . .	Word	 00000327 _DATA	
-posPortas  . . . . . . . . . . .	Word	 00002763 _DATA	
-posRespostaJogador . . . . . . .	Word	 00002761 _DATA	
-posTemporizador  . . . . . . . .	Word	 0000276F _DATA	
+posPortas  . . . . . . . . . . .	Word	 0000275F _DATA	
+posRespostaJogador . . . . . . .	Word	 0000275D _DATA	
+posTemporizador  . . . . . . . .	Word	 0000276B _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-respostaJogador  . . . . . . . .	Byte	 0000275C _DATA	
-respostaOriginal . . . . . . . .	Byte	 00002758 _DATA	
-statusResposta . . . . . . . . .	Byte	 00002760 _DATA	
-tempoInicial . . . . . . . . . .	DWord	 0000276B _DATA	
+respostaJogador  . . . . . . . .	Byte	 00002758 _DATA	
+respostaOriginal . . . . . . . .	Byte	 00002754 _DATA	
+statusResposta . . . . . . . . .	Byte	 0000275C _DATA	
+tempoInicial . . . . . . . . . .	DWord	 00002767 _DATA	
 textoInst  . . . . . . . . . . .	Byte	 00000380 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA

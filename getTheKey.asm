@@ -18,14 +18,16 @@ msgVenceu4 BYTE "                                                      ",0dh,0ah
 msgVenceu5 BYTE "      Pressione qualquer tecla para continuar         ",0dh,0ah,0
 
 ; Menu
-jogarString BYTE "JOGAR",0
-posJogar WORD ?
-instrucoesString BYTE "INSTRUCOES",0
+jogarString BYTE "JOGAR",0 ; Opcao do menu
+posJogar WORD ? ; Posicao onde sera exibida a opcao "jogar"
 
-posInst WORD ?
+instrucoesString BYTE "INSTRUCOES",0 ; Opcao do menu
+posInst WORD ? ; Posicao onde sera exibida a opcao "Instrucoes"
+
 msgMenu BYTE '"Maximize a janela antes de iniciar o jogo para uma melhor experiencia."',0
-opcaoSelecionada BYTE 0
-textoInst BYTE "INSTRUCOES",0dh,0ah,0dh,0ah
+opcaoSelecionada BYTE 0 ; Armazena a opcao do menu selecionada em dado momento
+
+textoInst BYTE "INSTRUCOES",0dh,0ah,0dh,0ah ; Texto das instrucoes do jogo
 BYTE 'O  que e o jogo:',0dh,0ah,0dh,0ah
 BYTE 'O "Get The Key" e um jogo que desafia o jogador a escapar de um labirinto por meio da resolucao de enigmas.',0dh,0ah,0dh,0ah
 BYTE '=========================================',0dh,0ah,0dh,0ah
@@ -55,39 +57,38 @@ minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
 maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
 			  ; Formato (Limite X | Limite Y)
 
-mapHeight = 36
-mapWidth = 98 ; LENGHTOF logo1 = 98
+mapHeight = 36 ; Numero de linhas do mapa
+mapWidth = 98 ; Numero de colunas do mapa
 
-BUFSIZE = mapHeight*mapWidth + 200 ; tamanho do mapa mais o tamanho do enigma+resposta
-BUFFERMAPA BYTE BUFSIZE DUP (?)
-mapMatrix BYTE BUFSIZE-200 DUP (?) ; retira 200 referente a parte do enigma
-mapaFileName BYTE 'nivel1.mapa',0
-elementoAux BYTE ?
+BUFSIZE = mapHeight*mapWidth + 200 ; Tamanho do mapa mais o tamanho do enigma+resposta (numero de bytes que sera lido do arquivo externo) 
+BUFFERMAPA BYTE BUFSIZE DUP (?) ; Utilizado para guardar os dados do arquivo externo
+mapMatrix BYTE BUFSIZE-200 DUP (?) ; Tamanho da matriz, retira 200 referente a parte do enigma
+mapaFileName BYTE 'nivel1.mapa',0 ; Nome do arquivo externo que contem o mapa e o enigma
+elementoAux BYTE ? ; Utilizado para armazenar temporariamente o conteudo da matriz que esta na posicao que o jogador esta tentando mover
 
 ;Estrutura Player
 playerSymbol BYTE 0FEh ; Armazena o caracter que representa o jogador
 playerX BYTE ? ; Posicao X do jogador na tela
-playerXAux BYTE ?
 playerY BYTE ? ; Posicao Y do jogador na tela
-playerYAux BYTE ?
-dispositivos BYTE 4 DUP (?) ; Como fazer para checar se esta num dispositivo (uma solucao e armazenar o offset na matriz)
+playerXAux BYTE ? ; Posicao X futura (que esta preste a mover), serve para verificar a validade do movimento
+playerYAux BYTE ? ; Posicao Y futura (que esta preste a mover), serve para verificar a validade do movimento
 
 ; Estrutura Enigma
-enigma BYTE 150 DUP (?)
-labelResposta BYTE " RESPOSTA: ",0
-OFFSETRESPOSTA = 74
-respostaOriginal BYTE 4 DUP(?)
-respostaJogador BYTE 4 DUP(?)
-statusResposta BYTE 0
-posRespostaJogador WORD ?
+enigma BYTE 150 DUP (?) ; Contera a pergunta que sera exibida
+labelResposta BYTE " RESPOSTA: ",0 ; Label que imprimida na tela antes da resposta inserida pelo usuario
+OFFSETRESPOSTA = 74 ; Quantidade de espacamento para exibir a resposta
+respostaOriginal BYTE 4 DUP(?) ; Contera a resposta original para ser comparada com a do jogador
+respostaJogador BYTE 4 DUP(?) ; A letras fornecidas pelo jogador serao armazenadas aqui
+statusResposta BYTE 0 ; Indica se a resposta foi descoberta ou nao
+posRespostaJogador WORD ? ; Indica a posicao na tela onde a resposta do jogador sera exibida
 
 ; Portas
-posPortas WORD 4 DUP (?)
+posPortas WORD 4 DUP (?) ; Armazena a posicao de cada porta
 
 ; Temporizador
-tempoInicial DWORD ?
-posTemporizador WORD ?
-labelTempo BYTE "TEMPO:",0
+tempoInicial DWORD ? ; Armazena o tempo inicial da partida para calcular o tempo decorrido
+posTemporizador WORD ? ; Posicao onde sera desenhado o temporizador
+labelTempo BYTE "TEMPO:",0 ; Label que antecede o temporizador
 
 .code
 main PROC
@@ -151,9 +152,9 @@ main ENDP
 
 ;---------------------------------------------------
 ReiniciaVariaveis PROC
-; ?
-; Recebe: ?
-; Retorna: ?
+; Retorna o valor das variaveis principais para seu estado inicial (zeradas), para tornar possivel jogar de novo
+; Recebe: resposta do jogador, status resposta
+; Retorna: nada
 ;---------------------------------------------------
 	mov edx, OFFSET respostaJogador
 	mov bl, ' '
@@ -169,9 +170,9 @@ L1:
 ReiniciaVariaveis ENDP
 ;---------------------------------------------------
 MenuInicial PROC
-; ?
+; Desenha na tela o menu inicial e controla as opcoes de jogar ou ver as instrucoes
 ; Recebe: ?
-; Retorna: ?
+; Retorna: al == 0 se pressionado o botao ESC, al == 0 caso contrario 
 ;---------------------------------------------------
 INICIALIZADOR:
 	mov opcaoSelecionada, 0
@@ -280,7 +281,7 @@ MAINLOOP:
 		mov al, '<'
 		call WriteChar
 
-	.ELSEIF ah == 50h
+	.ELSEIF ah == 50h ;Seta para baixo
 		mov opcaoSelecionada, 1
 
 		mov dx, posJogar
@@ -312,7 +313,7 @@ MAINLOOP:
 
 		mov al, '<'
 		call WriteChar
-	.ELSEIF al == 0dh
+	.ELSEIF al == 0dh ; Tecla enter
 		mov al, opcaoSelecionada
 		.IF al == 0
 			jmp RETORNA
@@ -385,7 +386,7 @@ GetElementoMatriz ENDP
 HandleControl PROC
 ; Gerencia o controle do jogo executando a operacao correta em funcao da tecla apertada
 ; Recebe: eax = tecla que foi acionada
-; Retorna: Nada
+; Retorna: ax indicando se a tecla esc foi pressionada ou nao
 ;---------------------------------------------------
 	.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
 		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
@@ -555,9 +556,9 @@ HandleControl ENDP
 
 ;---------------------------------------------------
 HandleSenha PROC
-; ?
+; Gerencia o movimento e a entrada de caracteres fornecidos pelo jogador quando este esta em um dispositivo de senha
 ; Recebe: eax = tecla que foi acionada, bl
-; Retorna: Nada
+; Retorna: ax indicando se a tecla esc foi pressionada ou nao
 ;---------------------------------------------------
 	.IF ah == 48h ; Verifica se foi a tecla de seta pra cima
 		mov bl, BYTE PTR minMap+1 ; Recupera o valor do limite do mapa
@@ -697,9 +698,9 @@ HandleSenha ENDP
 
 ;---------------------------------------------------
 VerificaSenha PROC
-; ?
-; Recebe: Nada
-; Retorna: Nada
+; Verifica se a resposta fornecida pelo jogador e igual a resposta do enigma, caso for, abre as portas
+; Recebe: resposta original e resposta do jogador
+; Retorna: statusResposta com  1 se está correto, ou com 0 se errado
 ;---------------------------------------------------
 	mov esi, OFFSET respostaOriginal
 	mov edx, OFFSET respostaJogador
@@ -740,9 +741,8 @@ VerificaSenha ENDP
 
 ;---------------------------------------------------
 DrawPlayer PROC
-;
 ; Desenha na tela o jogador em sua posicao atual
-; Recebe: Nada
+; Recebe: playerX, playerY
 ; Retorna: Nada
 ;---------------------------------------------------
 	call GetTextColor
@@ -765,9 +765,8 @@ DrawPlayer ENDP
 
 ;---------------------------------------------------	
 ClearPlayer PROC
-;
 ; Limpa a posicao antiga do jogador, evita que forme um rastro na tela devido ao movimento do jogador
-; Recebe: Nada
+; Recebe: playerX, playerY
 ; Retorna: Nada
 ;---------------------------------------------------
 	call GetTextColor
@@ -789,9 +788,9 @@ ClearPlayer ENDP
 
 ;---------------------------------------------------
 LoadMapaFile PROC
-; Carrega na memoria um mapa
-; Recebe: ? 
-; Retorna: ?
+; Le um arquivo externo e carrega na memoria seu conteudo. Preenche os dados do enigma e popula a matriz com os dados obtidos desse arquivo
+; Recebe: nome do arquivo 
+; Retorna: CL = 1 se houve um erro ao abrir o arquivo, CL = 0 caso contrario
 ;---------------------------------------------------
 ; Abertura do arquivo	
 	mov edx, OFFSET mapaFileName 
@@ -801,7 +800,7 @@ LoadMapaFile PROC
     mov  ecx,BUFSIZE
     call ReadFromFile
     jnc   SemErro
-    ;mov  bytesRead,eax
+
 	mov edx, OFFSET msgError
 	call WriteString
 	call ReadChar
@@ -873,10 +872,9 @@ LoadMapaFile ENDP
 
 ;---------------------------------------------------
 DrawLogo PROC
-;
 ; Desenha na tela o logo do jogo
-; Recebe: ?
-; Retorna: ?
+; Recebe: strings com o logo
+; Retorna: NADA
 ;---------------------------------------------------
 	call GetTextColor
     push eax
@@ -939,10 +937,9 @@ DrawLogo ENDP
 
 ;---------------------------------------------------
 DrawEnigma PROC
-;
-; Desenha na tela o local do enigma e o enigma propriamente dito
-; Recebe: ? 
-; Retorna: ?
+; Desenha na tela o local do enigma, o enigma propriamente dito e o local onde ficara a resposta do jogador
+; Recebe: Enigma 
+; Retorna: NADA
 ;---------------------------------------------------
 	mov al, '+'
 	mov ecx, LENGTHOF logo1 - 1
@@ -1007,10 +1004,9 @@ DrawEnigma ENDP
 
 ;---------------------------------------------------
 DrawRespostaJogador PROC
-;
-; ?
-; Recebe: ? 
-; Retorna: ?
+; Desenha na tela a situacao atual da string que representa a resposta fornecida pelo jogador
+; Recebe: resposta do jogador e local onde sera desenhada
+; Retorna: NADA
 ;---------------------------------------------------
 	call GetTextColor
 	push eax
@@ -1064,12 +1060,12 @@ DrawRespostaJogador PROC
 	call settextcolor
 	ret
 DrawRespostaJogador ENDP
+
 ;---------------------------------------------------
 DrawMapa PROC
-;
 ; Desenha na tela o mapa do labirinto
-; Recebe: ? 
-; Retorna: ?
+; Recebe: mapa
+; Retorna: NADA
 ;---------------------------------------------------
 	call GetTextColor
 	push eax
@@ -1191,12 +1187,12 @@ L3:
 
 	ret
 DrawMapa ENDP
+
 ;---------------------------------------------------
 DrawTempo PROC
-;
 ; Desenha na tela o tempo corrido desde a inicializacao da partida
-; Recebe: ? 
-; Retorna: ?
+; Recebe: tempo inicial e posicao onde sera desenhado
+; Retorna: NADA
 ;---------------------------------------------------
 	mov dx, posTemporizador
 	call GoToxy
