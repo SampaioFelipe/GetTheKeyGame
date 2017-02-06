@@ -3,7 +3,7 @@ INCLUDE Irvine32.inc
 .data
 Xmargin BYTE ? ; Margem da lateral esquerda usada para centralizar o ambiente do jogo
 CurrentLine BYTE 0 ; Auxilia na contagem de linhas ao desenhar o cenario
-CurrentColumn BYTE 0;
+CurrentColumn BYTE 0; Auxilia na contagem de colunas ao calcular a posicacao na tela em que estao as portas
 
 logo1 BYTE ' ______     ______     ______      ______   __  __     ______        __  __     ______     __  __ ',0dh,0ah,0
 logo2 BYTE '/\  ___\   /\  ___\   /\__  _\    /\__  _\ /\ \_\ \   /\  ___\      /\ \/ /    /\  ___\   /\ \_\ \ ',0dh,0ah,0
@@ -21,13 +21,35 @@ msgVenceu5 BYTE "      Pressione qualquer tecla para continuar         ",0dh,0ah
 jogarString BYTE "JOGAR",0
 posJogar WORD ?
 instrucoesString BYTE "INSTRUCOES",0
+
 posInst WORD ?
 msgMenu BYTE '"Maximize a janela antes de iniciar o jogo para uma melhor experiencia."',0
 opcaoSelecionada BYTE 0
-textoInst BYTE "Aqui vai o texto de instrucao.",0
-textoEsc BYTE "Tem certeza que deseja sair?"
-answer WORD ?
+textoInst BYTE "INSTRUCOES",0dh,0ah,0dh,0ah
+BYTE 'O  que e o jogo:',0dh,0ah,0dh,0ah
+BYTE 'O "Get The Key" e um jogo que desafia o jogador a escapar de um labirinto por meio da resolucao de enigmas.',0dh,0ah,0dh,0ah
+BYTE '=========================================',0dh,0ah,0dh,0ah
+BYTE 'Objetivo:',0dh,0ah,0dh,0ah
+BYTE 'Capturar a chave que se encontra centralizada no labirinto e fechada por 4 portas vermelhas no menor tempo possivel.',0dh,0ah
+BYTE 'Para a abertura das portas o jogador precisa percorrer o labirinto passando pelos dispositivos (numeros) conforme a ordem crescente.',0dh,0ah
+BYTE 'Cada um dos dispositivos compreende uma letra da resposta do enigma.',0dh,0ah
+BYTE 'Uma vez acertada a resposta do enigma as portas centrais irao se tornar verdes, permitindo a passagem para resgatar a chave.',0dh,0ah,0dh,0ah
+BYTE '=========================================',0dh,0ah,0dh,0ah
+BYTE 'Como Jogar:',0dh,0ah,0dh,0ah
+BYTE '1 - Leia  atentamente o enigma do jogo e descubra sua resposta. A resposta tem o tamanho da quantidade de numeros disponiveis no labirinto.',0dh,0ah
+BYTE '2 - Use as setas de movimentacao do teclado para caminhar pelo labirinto.',0dh,0ah
+BYTE '3 - Posicione-se sobre os numeros coloridos no cenario e digite a letra correspondente a resposta do enigma.',0dh,0ah
+BYTE '    As letras serao computadas apenas se voce estiver com o jogador sobre um dos dispositivos.',0dh,0ah
+BYTE '4 - Ao digitar a ultima letra (sobre o  ultimo numero) as portas que bloqueiam a passagem para a chave central ficarao verdes (SOMENTE SE A RESPOSTA ESTIVER CORRETA).',0dh,0ah
+BYTE '    Caso a resposta não esteja correta, retorne aos numeros e digite as letras corretamente.',0dh,0ah
+BYTE '5 - Ao acertar a resposta dirija-se ate a chave central (quadrado verde central). O cronometro sera pausado neste ponto e seu desempenho sera registrado.',0dh,0ah
+BYTE 'Pronto. Voce VENCEU!',0dh,0ah,0dh,0ah
+BYTE '=========================================',0dh,0ah,0dh,0ah
+BYTE 'Desenvolvido por Felipe Sampaio e Juliano Lanssarini - Jan/2017',0dh,0ah,0
+
 ; Mapa
+msgError BYTE "Erro ao abrir o arquivo com a fase do jogo.",0dh,0ah
+
 minMap WORD ? ; Limite minimo do espaco onde o jogador pode se locomover
 			  ; Formato (Limite X | Limite Y)
 maxMap WORD ? ; Limite maximo do espaco onde o jogador pode se locomover
@@ -62,11 +84,20 @@ posRespostaJogador WORD ?
 ; Portas
 posPortas WORD 4 DUP (?)
 
+; Temporizador
+tempoInicial DWORD ?
+posTemporizador WORD ?
+labelTempo BYTE "TEMPO:",0
+
 .code
 main PROC
 	call LoadMapaFile
+	jnz RETORNA
+
 INICIALIZADOR: ; Configuracoes iniciais
 	call MenuInicial
+	jz RETORNA
+
 	call GetMaxXY ; Pega o tamanho do terminal atual para configurar as posicoes na tela
 	sub dl, LENGTHOF logo1
 	shr dl,1
@@ -82,7 +113,13 @@ INICIALIZADOR: ; Configuracoes iniciais
 	inc al
 	mov playerY, al
 	call DrawPlayer ; Desenha o jogador na tela na posicao configurada
+	
+	call GetMseconds
+	mov tempoInicial,eax
+
 MAINLOOP:
+	call DrawTempo
+
 	movzx cx, playerY
 	push cx
 	movzx cx, playerX
@@ -107,6 +144,8 @@ FIM:
 				; cause bugs na leitura das teclas
 	call delay
 	jmp MAINLOOP ; Executa o loop principal do jogo
+
+RETORNA:
 exit
 main ENDP
 
@@ -273,7 +312,6 @@ MAINLOOP:
 
 		mov al, '<'
 		call WriteChar
-
 	.ELSEIF al == 0dh
 		mov al, opcaoSelecionada
 		.IF al == 0
@@ -281,8 +319,8 @@ MAINLOOP:
 		.ELSEIF al == 1
 			call Clrscr
 
-			mov dh,5
-			mov dl,5
+			mov dh,1
+			mov dl,0
 			call GoToxy
 			mov edx, OFFSET textoInst
 			call WriteString
@@ -291,6 +329,9 @@ MAINLOOP:
 			call Clrscr
 			jmp INICIALIZADOR
 		.ENDIF
+	.ELSEIF al == 01bh ; Tecla ESC
+		mov al, 1
+		jmp RETORNAESC
 	.ENDIF
 FIM:
 	mov eax, 50 ; Configura um delay de 50 milisegundos, isso garante que o jogo nao exija muita da cpu de forma desnecessaria e
@@ -300,7 +341,11 @@ FIM:
 
 RETORNA:
 	call Clrscr
+	mov al,0
+RETORNAESC:
+	ret
 MenuInicial ENDP
+
 ;---------------------------------------------------
 GetElementoMatriz PROC
 ; Mapeia um par ordenado (x,y), passado por parametro, em posicao de memoria da matriz do mapa
@@ -755,9 +800,14 @@ LoadMapaFile PROC
     mov  edx,OFFSET BUFFERMAPA
     mov  ecx,BUFSIZE
     call ReadFromFile
-    ;jc   show_error_message
+    jnc   SemErro
     ;mov  bytesRead,eax
-
+	mov edx, OFFSET msgError
+	call WriteString
+	call ReadChar
+	mov cl,1
+	jmp Fim
+SemErro:
 ; Recupera as informacoes sobre a pergunta e o enigma 
 	mov edx,OFFSET BUFFERMAPA
 	mov eax, OFFSET enigma
@@ -816,6 +866,8 @@ ColocaNaMatriz:
 	jmp MapaInicio
 
 MapaFim:
+	mov cl,0
+Fim:
 	ret
 LoadMapaFile ENDP
 
@@ -1124,9 +1176,36 @@ L3:
 	add dl, mapWidth + 1
 	mov maxMap,dx
 
+	mov dl, Xmargin
+	add dh, 2
+	call Gotoxy
+
+	add dl, LENGTHOF labelTempo
+	mov posTemporizador,dx
+
+	mov edx, OFFSET labelTempo
+	call WriteString
+
 	pop eax
+	call settextcolor
 
 	ret
 DrawMapa ENDP
+;---------------------------------------------------
+DrawTempo PROC
+;
+; Desenha na tela o tempo corrido desde a inicializacao da partida
+; Recebe: ? 
+; Retorna: ?
+;---------------------------------------------------
+	mov dx, posTemporizador
+	call GoToxy
+	
+	call GetMseconds
+	sub	eax, tempoInicial
+	shr eax,10
+	call WriteDec
 
+	ret
+DrawTempo ENDP
 END main
